@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexGen Keys - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal, .loader-overlay, #message-box { transition: opacity 0.3s ease; }
+        .sidebar-link { transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link.active { background-color: #4f46e5; color: white; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .status-badge { padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+        .status-pending { background-color: #fef9c3; color: #ca8a04; }
+        .status-approved { background-color: #dcfce7; color: #16a34a; }
+        .status-rejected { background-color: #fee2e2; color: #dc2626; }
+        .toggle-bg:after { content: ''; position: absolute; top: 2px; left: 2px; background: white; border-radius: 50%; height: 1.25rem; width: 1.25rem; transition: transform 0.2s; }
+        input:checked + .toggle-bg:after { transform: translateX(100%); }
+        input:checked + .toggle-bg { background-color: #4f46e5; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="login-screen" class="flex items-center justify-center min-h-screen bg-gray-200">
+        <div class="w-full max-w-sm p-8 bg-white rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Admin Panel Login</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                 <p id="login-error" class="text-sm text-red-600 mb-4"></p>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-dashboard" class="hidden">
+        <div class="flex h-screen bg-gray-100">
+            <aside class="w-64 bg-gray-800 text-white flex flex-col">
+                <div class="h-16 flex items-center justify-center text-2xl font-bold">Admin Panel</div>
+                <nav class="flex-1 px-4 py-6 space-y-2">
+                    <a href="#dashboard" class="sidebar-link active flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-tachometer-alt w-6 mr-3"></i>Dashboard</a>
+                    <a href="#products" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-box-open w-6 mr-3"></i>Products</a>
+                    <a href="#orders" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-receipt w-6 mr-3"></i>Orders</a>
+                    <a href="#verifications" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700 relative"><i class="fas fa-check-double w-6 mr-3"></i>Verifications <span id="pending-verifications-badge" class="absolute right-2 top-1/2 -translate-y-1/2 bg-yellow-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span></a>
+                    <a href="#qrcodes" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-qrcode w-6 mr-3"></i>QR Codes</a>
+                    <a href="#reviews" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-star w-6 mr-3"></i>Reviews</a>
+                    <a href="#users" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-users w-6 mr-3"></i>Users</a>
+                    <a href="#marketing" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-bullhorn w-6 mr-3"></i>Marketing</a>
+                </nav>
+                <div class="p-4 border-t border-gray-700">
+                    <button id="logout-btn" class="w-full flex items-center px-4 py-2 rounded-md text-red-400 hover:bg-red-500 hover:text-white"><i class="fas fa-sign-out-alt w-6 mr-3"></i>Logout</button>
+                </div>
+            </aside>
+
+            <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+                <section id="dashboard-section" class="content-section active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-gray-500">Total Products</h3><p id="total-products" class="text-3xl font-bold">0</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-gray-500">Total Users</h3><p id="total-users" class="text-3xl font-bold">0</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-gray-500">Pending Verifications</h3><p id="pending-verifications" class="text-3xl font-bold">0</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-gray-500">Total Orders</h3><p id="total-orders" class="text-3xl font-bold">0</p></div>
+                    </div>
+                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Recent Pending Verifications</h2>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3">User</th><th class="px-6 py-3">Amount</th><th class="px-6 py-3">Transaction ID</th><th class="px-6 py-3">Date</th><th class="px-6 py-3">Actions</th></tr></thead><tbody id="recent-verifications-table"></tbody></table></div></div>
+                </section>
+
+                <section id="products-section" class="content-section">
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Products</h1><button id="add-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Product</button></div>
+                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price Range</th><th class="px-4 py-3">Keys Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
+                </section>
+
+                <section id="orders-section" class="content-section">
+                    <h1 class="text-3xl font-bold mb-6">Orders</h1>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">User Email</th><th class="px-4 py-3">Phone</th><th class="px-4 py-3">Total</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Items</th></tr></thead><tbody id="orders-table"></tbody></table></div></div>
+                </section>
+
+                <section id="verifications-section" class="content-section">
+                    <h1 class="text-3xl font-bold mb-6">Payment Verifications</h1>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">User</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Transaction ID</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="verifications-table"></tbody></table></div></div>
+                </section>
+
+                <section id="qrcodes-section" class="content-section">
+                    <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Payment QR Codes</h1><button id="add-qrcode-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add QR Code</button></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Image URL</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="qrcodes-table"></tbody></table></div></div>
+                </section>
+                
+                <section id="reviews-section" class="content-section">
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Review</button></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Stars</th><th class="px-4 py-3">Text</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="reviews-table"></tbody></table></div></div>
+                </section>
+
+                <section id="users-section" class="content-section">
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Users</h1><input type="text" id="user-search" placeholder="Search by email..." class="w-1/3 px-3 py-2 border rounded-md"></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Email</th><th class="px-4 py-3">Wallet Balance</th><th class="px-4 py-3">Joined On</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
+                </section>
+
+                <section id="marketing-section" class="content-section">
+                    <h1 class="text-3xl font-bold mb-6">Marketing</h1>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h2 class="text-xl font-bold mb-4">Homepage Banner</h2>
+                            <form id="banner-form" class="space-y-4">
+                                <div><label class="font-medium">Title</label><input name="heroTitle" class="mt-1 block w-full border rounded-md p-2"></div>
+                                <div><label class="font-medium">Subtitle</label><input name="heroSubtitle" class="mt-1 block w-full border rounded-md p-2"></div>
+                                <div><label class="font-medium">Image URL</label><input name="heroImageUrl" class="mt-1 block w-full border rounded-md p-2"></div>
+                                <div><label class="font-medium">Button Text</label><input name="heroButtonText" class="mt-1 block w-full border rounded-md p-2"></div>
+                                <div><label class="font-medium">Button Link</label><input name="heroButtonLink" class="mt-1 block w-full border rounded-md p-2"></div>
+                                <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Save Banner</button>
+                            </form>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Coupons</h2><button id="add-coupon-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 text-sm">Add Coupon</button></div>
+                            <div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Code</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Value</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="coupons-table"></tbody></table></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <div id="product-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl m-4">
+                <form id="product-form" class="p-6"><h3 id="product-modal-title" class="text-xl font-semibold mb-4">Add Product</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-product-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
+            </div>
+        </div>
+    </div>
+    <div id="review-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg m-4">
+                <form id="review-form" class="p-6"><h3 id="review-modal-title" class="text-xl font-semibold mb-4">Add Review</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-review-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
+            </div>
+        </div>
+    </div>
+    <div id="coupon-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg m-4">
+                <form id="coupon-form" class="p-6"><h3 id="coupon-modal-title" class="text-xl font-semibold mb-4">Add Coupon</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-coupon-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
+            </div>
+        </div>
+    </div>
+    <div id="qrcode-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-lg m-4">
+                <form id="qrcode-form" class="p-6"><h3 id="qrcode-modal-title" class="text-xl font-semibold mb-4">Add QR Code</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-qrcode-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
+            </div>
+        </div>
+    </div>
+     <div id="user-detail-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen">
+             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 relative">
+                <div class="p-8" id="user-detail-content"></div>
+             </div>
+        </div>
+    </div>
+    <div id="loader-overlay" class="loader-overlay hidden fixed z-[60] inset-0 bg-gray-900 bg-opacity-50 opacity-0 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-5xl text-white"></i></div>
+    
+    <div id="message-box" class="hidden fixed z-[70] inset-0 bg-gray-900 bg-opacity-60 opacity-0 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm m-4 p-6 text-center">
+            <p id="message-box-text" class="text-gray-800 mb-6"></p>
+            <button id="message-box-close" class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, addDoc, updateDoc, deleteDoc, serverTimestamp, runTransaction, query, orderBy, getDocs, where, writeBatch, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCw5iau9JmPXtAHB6Ty9zUDS4P5NxKWXAI",
+            authDomain: "digi-2eb26.firebaseapp.com",
+            projectId: "digi-2eb26",
+            storageBucket: "digi-2eb26.firebasestorage.app",
+            messagingSenderId: "374375506797",
+            appId: "1:374375506797:web:13d102e059e194ceaf7064"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- State ---
+        let allUsers = [];
+        let productsMap = new Map();
+        let reviewsMap = new Map();
+        let userMap = new Map();
+        let couponsMap = new Map();
+        let qrcodesMap = new Map();
+        let currentProduct = null;
+        let currentReview = null;
+        let currentCoupon = null;
+        let currentQRCode = null;
+        
+        // --- App Entry Point ---
+        document.addEventListener('DOMContentLoaded', main);
+
+        function main() {
+            const loginScreen = document.getElementById('login-screen');
+            const adminDashboard = document.getElementById('admin-dashboard');
+            const loginForm = document.getElementById('login-form');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    loginScreen.classList.add('hidden');
+                    adminDashboard.classList.remove('hidden');
+                    initDashboard();
+                } else {
+                    loginScreen.classList.remove('hidden');
+                    adminDashboard.classList.add('hidden');
+                }
+            });
+
+            loginForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                const loginError = document.getElementById('login-error');
+                loginError.textContent = '';
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                    loginError.textContent = error.message;
+                }
+            });
+
+            logoutBtn.addEventListener('click', () => signOut(auth));
+        }
+
+        function initDashboard() {
+            setupNavigation();
+            setupModalListeners();
+            loadAllData();
+
+            const mainContent = document.querySelector('main');
+            mainContent.addEventListener('click', e => {
+                const target = e.target;
+                const id = target.dataset.id;
+                if (!id) return;
+
+                if (target.classList.contains('approve-btn')) {
+                    approveVerification(id, target.dataset.userId, Number(target.dataset.amount));
+                }
+                if (target.classList.contains('reject-btn')) {
+                    rejectVerification(id);
+                }
+            });
+        }
+
+        function setupModalListeners() {
+            document.getElementById('add-product-btn').addEventListener('click', () => openProductModal());
+            document.getElementById('cancel-product-modal').addEventListener('click', () => closeModal(document.getElementById('product-modal')));
+            document.getElementById('add-review-btn').addEventListener('click', () => openReviewModal());
+            document.getElementById('cancel-review-modal').addEventListener('click', () => closeModal(document.getElementById('review-modal')));
+            document.getElementById('add-coupon-btn').addEventListener('click', () => openCouponModal());
+            document.getElementById('cancel-coupon-modal').addEventListener('click', () => closeModal(document.getElementById('coupon-modal')));
+            document.getElementById('add-qrcode-btn').addEventListener('click', () => openQRCodeModal());
+            document.getElementById('cancel-qrcode-modal').addEventListener('click', () => closeModal(document.getElementById('qrcode-modal')));
+            
+            document.getElementById('user-detail-modal').addEventListener('click', (e) => {
+                if(e.target.matches('.close-modal-btn')) {
+                    closeModal(document.getElementById('user-detail-modal'));
+                }
+            });
+
+            document.getElementById('product-form').addEventListener('submit', handleProductFormSubmit);
+            document.getElementById('review-form').addEventListener('submit', handleReviewFormSubmit);
+            document.getElementById('coupon-form').addEventListener('submit', handleCouponFormSubmit);
+            document.getElementById('qrcode-form').addEventListener('submit', handleQRCodeFormSubmit);
+            document.getElementById('banner-form').addEventListener('submit', handleBannerFormSubmit);
+            document.getElementById('user-search').addEventListener('input', handleUserSearch);
+
+            // NEW: Listener for the generic message box
+            document.getElementById('message-box-close').addEventListener('click', () => {
+                const msgBox = document.getElementById('message-box');
+                closeModal(msgBox);
+            });
+        }
+        
+        function setupNavigation() {
+            const links = document.querySelectorAll('.sidebar-link');
+            const sections = document.querySelectorAll('.content-section');
+            links.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1) + '-section';
+                    links.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    sections.forEach(s => s.classList.remove('active'));
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        }
+        
+        function loadAllData() {
+            loadUsers().then(() => {
+                ['products', 'orders', 'paymentVerifications', 'reviews', 'coupons', 'paymentQRs'].forEach(loadCollectionData);
+                loadDashboardAnalytics();
+                loadBannerContent();
+            });
+        }
+
+        function loadCollectionData(collectionName) {
+            const tableIdMap = {
+                products: 'products-table', reviews: 'reviews-table', coupons: 'coupons-table',
+                orders: 'orders-table', paymentVerifications: 'verifications-table',
+                paymentQRs: 'qrcodes-table'
+            };
+            const renderMap = {
+                products: renderProductRow, reviews: renderReviewRow, coupons: renderCouponRow,
+                orders: renderOrderRow, paymentVerifications: renderVerificationRow,
+                paymentQRs: renderQRCodeRow
+            };
+            const dataMap = {
+                products: productsMap, reviews: reviewsMap, coupons: couponsMap,
+                orders: new Map(), paymentVerifications: new Map(),
+                paymentQRs: qrcodesMap
+            };
+              const openFnMap = { products: openProductModal, reviews: openReviewModal, coupons: openCouponModal, paymentQRs: openQRCodeModal };
+
+            const q = query(collection(db, collectionName));
+            onSnapshot(q, snapshot => {
+                dataMap[collectionName].clear();
+                const table = document.getElementById(tableIdMap[collectionName]);
+                if (!table) return; // Failsafe if element isn't on the page
+                const docs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                
+                table.innerHTML = docs.map(doc => {
+                    dataMap[collectionName].set(doc.id, doc.data());
+                    return renderMap[collectionName](doc.id, doc.data());
+                }).join('');
+
+                if (collectionName === 'paymentVerifications') {
+                    const verifications = docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const pending = verifications.filter(v => v.status === 'pending');
+                    document.getElementById('recent-verifications-table').innerHTML = pending.slice(0, 5).map(v => renderRecentVerificationRow(v.id, v)).join('');
+                    
+                    const badge = document.getElementById('pending-verifications-badge');
+                    badge.textContent = pending.length;
+                    badge.classList.toggle('hidden', pending.length === 0);
+                } else if (openFnMap[collectionName]) {
+                    const type = collectionName === 'paymentQRs' ? 'qr code' : collectionName.slice(0, -1);
+                    attachTableListeners(tableIdMap[collectionName], type, openFnMap[collectionName], deleteDoc, collectionName, dataMap[collectionName]);
+                }
+            });
+        }
+        
+        function loadUsers() {
+            return new Promise((resolve) => {
+                onSnapshot(query(collection(db, 'users')), snapshot => {
+                    userMap.clear();
+                    const docs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                    allUsers = docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    allUsers.forEach(user => userMap.set(user.id, user.email));
+                    renderUsers(allUsers);
+                    resolve();
+                });
+            });
+        }
+
+        const loadDashboardAnalytics = () => {
+            ['products', 'users', 'orders'].forEach(c => onSnapshot(collection(db, c), s => document.getElementById(`total-${c}`).textContent = s.size));
+            onSnapshot(collection(db, 'paymentVerifications'), s => document.getElementById('pending-verifications').textContent = s.docs.filter(d => d.data().status === 'pending').length);
+        };
+        
+        function renderUsers(usersToRender) {
+             const table = document.getElementById('users-table');
+             table.innerHTML = usersToRender.map(user => renderUserRow(user.id, user)).join('');
+             attachUserActions();
+        }
+
+        function handleUserSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredUsers = allUsers.filter(user => user.email.toLowerCase().includes(searchTerm));
+            renderUsers(filteredUsers);
+        }
+
+        // --- RENDER FUNCTIONS ---
+        const renderProductRow = (id, data) => {
+            let priceText = 'N/A';
+            if (data.variants && data.variants.length > 0) {
+                const prices = data.variants.map(v => v.price);
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                priceText = minPrice === maxPrice ? `₹${minPrice}` : `₹${minPrice} - ₹${maxPrice}`;
+            }
+            return `<tr><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3">${data.type}</td><td class="px-4 py-3">${priceText}</td><td class="px-4 py-3">${data.keys?.length || 0}</td><td class="px-4 py-3"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" data-id="${id}" class="sr-only peer featured-toggle" ${data.isFeatured ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div></label></td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
+        }
+        const renderOrderRow = (id, data) => `<tr><td class="px-4 py-3">${data.orderId || id.slice(0, 8)+'...'}</td><td class="px-4 py-3">${userMap.get(data.userId) || 'N/A'}</td><td class="px-4 py-3">${data.phoneNumber || 'N/A'}</td><td class="px-4 py-3">₹${data.total.toFixed(2)}</td><td class="px-4 py-3">${data.createdAt.toDate().toLocaleDateString()}</td><td class="px-4 py-3">${data.items.length}</td></tr>`;
+        const renderVerificationRow = (id, data) => `<tr><td class="px-4 py-3">${data.userEmail}</td><td class="px-4 py-3">₹${data.amount}</td><td class="px-4 py-3">${data.transactionId}</td><td class="px-4 py-3"><span class="status-badge status-${data.status}">${data.status}</span></td><td class="px-4 py-3">${data.createdAt.toDate().toLocaleDateString()}</td><td class="px-4 py-3 space-x-2">${data.status === 'pending' ? `<button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600">Approve</button><button data-id="${id}" class="reject-btn text-red-600">Reject</button>` : ''}</td></tr>`;
+        const renderRecentVerificationRow = (id, data) => `<tr><td class="px-6 py-4">${data.userEmail}</td><td class="px-6 py-4">₹${data.amount}</td><td class="px-6 py-4">${data.transactionId}</td><td class="px-6 py-4">${data.createdAt.toDate().toLocaleDateString()}</td><td class="px-6 py-4 space-x-2"><button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600">Approve</button><button data-id="${id}" class="reject-btn text-red-600">Reject</button></td></tr>`;
+        const renderReviewRow = (id, data) => `<tr><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3">${data.stars}</td><td class="px-4 py-3 truncate max-w-xs">${data.text}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
+        const renderUserRow = (id, data) => `<tr><td class="px-4 py-3">${data.email}</td><td class="px-4 py-3">₹${(data.walletBalance || 0).toFixed(2)}</td><td class="px-4 py-3">${data.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td><td class="px-4 py-3"><button data-id="${id}" class="view-user-btn text-indigo-600">View</button></td></tr>`;
+        const renderCouponRow = (id, data) => `<tr><td class="px-4 py-3">${data.code}</td><td class="px-4 py-3">${data.type}</td><td class="px-4 py-3">${data.type === 'percentage' ? data.value + '%' : '₹' + data.value}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
+        const renderQRCodeRow = (id, data) => `<tr><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3 truncate max-w-sm">${data.imageUrl}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
+
+        // --- MODAL & FORM LOGIC ---
+        function openModal(modal) { modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
+        function closeModal(modal) { modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
+        
+        // NEW: Function to show a message to the user
+        function showMessage(message) {
+            const msgBox = document.getElementById('message-box');
+            const msgText = document.getElementById('message-box-text');
+            msgText.textContent = message;
+            openModal(msgBox);
+        }
+
+        function openProductModal(product = null) {
+            currentProduct = product;
+            const productModal = document.getElementById('product-modal');
+            const formContent = productModal.querySelector('.space-y-4');
+            document.getElementById('product-modal-title').textContent = product ? 'Edit Product' : 'Add Product';
+
+            formContent.innerHTML = `
+                <div><label class="font-medium">Name</label><input name="name" value="${product?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
+                <div><label class="font-medium">Description</label><textarea name="description" class="mt-1 block w-full border rounded-md p-2 h-24">${product?.description || ''}</textarea></div>
+                <div><label class="font-medium">Type</label><select name="type" class="mt-1 block w-full border rounded-md p-2"><option ${product?.type === 'OTT' ? 'selected' : ''}>OTT</option><option ${product?.type === 'Software' ? 'selected' : ''}>Software</option></select></div>
+                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${product?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2"></div>
+                
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="font-medium">Variants</label>
+                        <button type="button" id="add-variant-btn" class="text-sm bg-indigo-500 text-white py-1 px-3 rounded-md hover:bg-indigo-600">Add Variant</button>
+                    </div>
+                    <div id="variants-container" class="space-y-3"></div>
+                </div>
+
+                <div><label class="font-medium">Product Keys (one per line)</label><textarea name="keys" class="mt-1 block w-full border rounded-md p-2 h-32">${product?.keys?.join('\n') || ''}</textarea></div>
+                <div class="flex items-center"><input type="checkbox" name="isFeatured" ${product?.isFeatured ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"><label>Featured on Homepage?</label></div>
+            `;
+            
+            const variantsContainer = formContent.querySelector('#variants-container');
+            
+            const addVariantInputRow = (variant = {}) => {
+                const variantId = Date.now();
+                const newRow = document.createElement('div');
+                newRow.className = 'variant-row grid grid-cols-12 gap-2 items-center';
+                newRow.innerHTML = `
+                    <div class="col-span-5"><input name="variantName_${variantId}" placeholder="Variant Name (e.g., 1 Month)" value="${variant.name || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
+                    <div class="col-span-3"><input type="number" step="0.01" name="variantPrice_${variantId}" placeholder="Price" value="${variant.price || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
+                    <div class="col-span-3"><input type="number" step="0.01" name="variantDiscountPrice_${variantId}" placeholder="Discount (Optional)" value="${variant.discountPrice || ''}" class="w-full border rounded-md p-2 text-sm"></div>
+                    <div class="col-span-1 text-center"><button type="button" class="remove-variant-btn text-red-500 hover:text-red-700">&times;</button></div>
+                `;
+                variantsContainer.appendChild(newRow);
+                newRow.querySelector('.remove-variant-btn').addEventListener('click', () => newRow.remove());
+            };
+            
+            if (product && product.variants && product.variants.length > 0) {
+                product.variants.forEach(addVariantInputRow);
+            } else {
+                addVariantInputRow();
+            }
+
+            formContent.querySelector('#add-variant-btn').addEventListener('click', () => addVariantInputRow());
+
+            openModal(productModal);
+        }
+        
+        async function handleProductFormSubmit(e) {
+            e.preventDefault();
+            const productModal = document.getElementById('product-modal');
+            const formData = new FormData(e.target);
+            const keys = formData.get('keys').split('\n').map(k => k.trim()).filter(k => k);
+            
+            const variants = [];
+            document.querySelectorAll('.variant-row').forEach(row => {
+                const nameInput = row.querySelector('input[name^="variantName"]');
+                const priceInput = row.querySelector('input[name^="variantPrice"]');
+                const discountPriceInput = row.querySelector('input[name^="variantDiscountPrice"]');
+                
+                if (nameInput.value && priceInput.value) {
+                    variants.push({
+                        name: nameInput.value,
+                        price: Number(priceInput.value),
+                        discountPrice: Number(discountPriceInput.value) || null
+                    });
+                }
+            });
+
+            if (variants.length === 0) {
+                showMessage('Please add at least one variant with a name and price.');
+                return;
+            }
+            
+            const data = {
+                name: formData.get('name'), type: formData.get('type'),
+                variants: variants,
+                imageUrl: formData.get('imageUrl'),
+                description: formData.get('description'), isFeatured: formData.get('isFeatured') === 'on',
+                keys: keys, createdAt: serverTimestamp()
+            };
+            if (currentProduct) { delete data.createdAt; await updateDoc(doc(db, 'products', currentProduct.id), data); } 
+            else { await addDoc(collection(db, 'products'), data); }
+            closeModal(productModal);
+        }
+        
+        function openReviewModal(review = null) {
+            currentReview = review;
+            const reviewModal = document.getElementById('review-modal');
+            document.getElementById('review-modal-title').textContent = review ? 'Edit Review' : 'Add Review';
+            reviewModal.querySelector('.space-y-4').innerHTML = `
+                <div><label class="font-medium">Customer Name</label><input name="name" value="${review?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
+                <div><label class="font-medium">Stars (1-5)</label><input type="number" name="stars" min="1" max="5" value="${review?.stars || '5'}" class="mt-1 block w-full border rounded-md p-2" required></div>
+                <div><label class="font-medium">Review Text</label><textarea name="text" class="mt-1 block w-full border rounded-md p-2 h-24" required>${review?.text || ''}</textarea></div>`;
+            openModal(reviewModal);
+        }
+        
+        async function handleReviewFormSubmit(e) {
+            e.preventDefault();
+            const reviewModal = document.getElementById('review-modal');
+            const data = {
+                name: e.target.name.value, stars: Number(e.target.stars.value),
+                text: e.target.text.value, createdAt: serverTimestamp()
+            };
+            if (currentReview) { delete data.createdAt; await updateDoc(doc(db, 'reviews', currentReview.id), data); } 
+            else { await addDoc(collection(db, 'reviews'), data); }
+            closeModal(reviewModal);
+        }
+
+        function openCouponModal(coupon = null) {
+            currentCoupon = coupon;
+            const couponModal = document.getElementById('coupon-modal');
+            document.getElementById('coupon-modal-title').textContent = coupon ? 'Edit Coupon' : 'Add Coupon';
+            couponModal.querySelector('.space-y-4').innerHTML = `
+                <div><label class="font-medium">Code</label><input name="code" value="${coupon?.code || ''}" class="uppercase mt-1 block w-full border rounded-md p-2" required></div>
+                <div><label class="font-medium">Type</label><select name="type" class="mt-1 block w-full border rounded-md p-2"><option value="percentage" ${coupon?.type === 'percentage' ? 'selected' : ''}>Percentage</option><option value="fixed" ${coupon?.type === 'fixed' ? 'selected' : ''}>Fixed Amount</option></select></div>
+                <div><label class="font-medium">Value</label><input type="number" name="value" value="${coupon?.value || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>`;
+            openModal(couponModal);
+        }
+
+        async function handleCouponFormSubmit(e) {
+            e.preventDefault();
+            const couponModal = document.getElementById('coupon-modal');
+            const data = {
+                code: e.target.code.value.toUpperCase(), type: e.target.type.value,
+                value: Number(e.target.value.value), createdAt: serverTimestamp()
+            };
+            if (currentCoupon) { delete data.createdAt; await updateDoc(doc(db, 'coupons', currentCoupon.id), data); } 
+            else { await addDoc(collection(db, 'coupons'), data); }
+            closeModal(couponModal);
+        }
+
+        function openQRCodeModal(qrcode = null) {
+            currentQRCode = qrcode;
+            const qrcodeModal = document.getElementById('qrcode-modal');
+            document.getElementById('qrcode-modal-title').textContent = qrcode ? 'Edit QR Code' : 'Add QR Code';
+            qrcodeModal.querySelector('.space-y-4').innerHTML = `
+                <div><label class="font-medium">Name</label><input name="name" value="${qrcode?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
+                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${qrcode?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
+            `;
+            openModal(qrcodeModal);
+        }
+
+        async function handleQRCodeFormSubmit(e) {
+            e.preventDefault();
+            const qrcodeModal = document.getElementById('qrcode-modal');
+            const data = {
+                name: e.target.name.value,
+                imageUrl: e.target.imageUrl.value,
+                createdAt: serverTimestamp()
+            };
+            if (currentQRCode) {
+                delete data.createdAt;
+                await updateDoc(doc(db, 'paymentQRs', currentQRCode.id), data);
+            } else {
+                await addDoc(collection(db, 'paymentQRs'), data);
+            }
+            closeModal(qrcodeModal);
+        }
+
+        function openUserDetailModal(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+            document.getElementById('user-detail-content').innerHTML = `
+                <button type="button" class="close-modal-btn absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-800" data-modal-id="user-detail-modal">&times;</button>
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold mb-4">${user.email}</h3>
+                    <a href="mailto:${user.email}" class="bg-gray-200 text-gray-800 py-2 px-4 rounded-md text-sm hover:bg-gray-300"><i class="fas fa-envelope mr-2"></i>Send Email</a>
+                </div>
+                <div class="mb-6"><p class="text-gray-600">Current Balance: <span class="font-bold text-xl">₹${(user.walletBalance || 0).toFixed(2)}</span></p></div>
+                <form id="wallet-adjustment-form" class="mb-6 p-4 border rounded-md">
+                     <h4 class="font-semibold mb-2">Adjust Wallet</h4>
+                     <div class="flex space-x-2">
+                         <input type="number" step="0.01" id="adjustment-amount" placeholder="Amount (e.g., 50 or -50)" class="flex-grow border rounded-md p-2" required>
+                         <input type="text" id="adjustment-reason" placeholder="Reason (e.g., Refund)" class="flex-grow border rounded-md p-2" required>
+                         <button type="submit" class="bg-green-500 text-white px-4 rounded-md">Adjust</button>
+                     </div>
+                </form>
+                <div class="grid grid-cols-2 gap-6">
+                    <div><h4 class="font-semibold mb-2">Order History</h4><div id="user-orders-history" class="max-h-40 overflow-y-auto">Loading...</div></div>
+                    <div><h4 class="font-semibold mb-2">Wallet History</h4><div id="user-wallet-history" class="max-h-40 overflow-y-auto">Loading...</div></div>
+                </div>`;
+            
+            openModal(document.getElementById('user-detail-modal'));
+            loadUserHistory(userId, 'orders', 'user-orders-history');
+            loadUserHistory(userId, 'walletTransactions', 'user-wallet-history');
+            document.getElementById('wallet-adjustment-form').addEventListener('submit', e => {
+                e.preventDefault();
+                const amount = parseFloat(document.getElementById('adjustment-amount').value);
+                const reason = document.getElementById('adjustment-reason').value;
+                if(amount && reason) adjustUserWallet(userId, amount, reason);
+            });
+        }
+        
+        function attachTableListeners(tableId, type, openFn, deleteFn, collectionName, dataMap) {
+            document.getElementById(tableId).addEventListener('click', async e => {
+                const id = e.target.dataset.id; if (!id) return;
+                if (e.target.classList.contains('edit-btn')) { const data = dataMap.get(id); if (data) openFn({ id, ...data }); }
+                if (e.target.classList.contains('delete-btn')) { 
+                    // Using the new message box instead of confirm()
+                    if (await showConfirm(`Are you sure you want to delete this ${type}?`)) { 
+                        await deleteFn(doc(db, collectionName, id)); 
+                    }
+                }
+                if (e.target.classList.contains('featured-toggle')) { await updateDoc(doc(db, 'products', id), { isFeatured: e.target.checked }); }
+            });
+        }
+        function attachUserActions() { document.querySelectorAll('.view-user-btn').forEach(btn => btn.addEventListener('click', e => openUserDetailModal(e.target.dataset.id))); }
+        
+        // **FIX**: approveVerification now handles the "User not found" error gracefully.
+        async function approveVerification(verificationId, userId, amount) {
+            const loaderOverlay = document.getElementById('loader-overlay');
+            openModal(loaderOverlay);
+            const verificationRef = doc(db, "paymentVerifications", verificationId);
+            const userRef = doc(db, "users", userId);
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    // This is where the error was happening.
+                    if (!userDoc.exists()) {
+                        // This throws a specific error that we can catch.
+                        throw "User document not found!";
+                    }
+                    const newBalance = (userDoc.data().walletBalance || 0) + amount;
+                    transaction.update(userRef, { walletBalance: newBalance });
+                    transaction.update(verificationRef, { status: "approved" });
+                    const walletTxRef = doc(collection(db, 'walletTransactions'));
+                    transaction.set(walletTxRef, { userId: userId, amount: amount, type: 'credit', description: 'Wallet top-up (Approved)', createdAt: serverTimestamp() });
+                });
+            } catch (error) {
+                // Now we catch the specific error and show a helpful message.
+                if (error === "User document not found!") {
+                    showMessage("Approval Failed: The user for this payment request could not be found in the database. The user may have been deleted.");
+                } else {
+                    showMessage("An unknown error occurred during the transaction. Please check the console for details.");
+                    console.error("Transaction failed: ", error);
+                }
+            } finally {
+                closeModal(loaderOverlay);
+            }
+        }
+
+        async function rejectVerification(verificationId) { await updateDoc(doc(db, "paymentVerifications", verificationId), { status: 'rejected' }); }
+        
+        async function adjustUserWallet(userId, amount, reason) {
+            const loaderOverlay = document.getElementById('loader-overlay');
+            openModal(loaderOverlay);
+            const userRef = doc(db, "users", userId);
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    if (!userDoc.exists()) throw "User not found";
+                    const newBalance = (userDoc.data().walletBalance || 0) + amount;
+                    transaction.update(userRef, { walletBalance: newBalance });
+                    const walletTxRef = doc(collection(db, 'walletTransactions'));
+                    transaction.set(walletTxRef, { userId: userId, amount: Math.abs(amount), type: amount > 0 ? 'credit' : 'debit', description: `Admin: ${reason}`, createdAt: serverTimestamp() });
+                });
+                closeModal(document.getElementById('user-detail-modal'));
+            } catch (error) { 
+                showMessage(`Wallet adjustment failed: ${error}`);
+                console.error("Wallet adjustment failed:", error); 
+            } 
+            finally { closeModal(loaderOverlay); }
+        }
+
+        async function loadUserHistory(userId, collectionName, elementId) {
+            const container = document.getElementById(elementId);
+            const q = query(collection(db, collectionName), where("userId", "==", userId), orderBy("createdAt", "desc"));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) { container.innerHTML = `<p class="text-gray-500">No history found.</p>`; return; }
+            if (collectionName === 'orders') {
+                container.innerHTML = snapshot.docs.map(doc => `<div class="text-sm p-2 border-b">${doc.data().createdAt.toDate().toLocaleDateString()}: ${doc.data().items.length} items - ₹${doc.data().total.toFixed(2)}</div>`).join('');
+            } else {
+                 container.innerHTML = snapshot.docs.map(doc => `<div class="text-sm p-2 border-b">${doc.data().createdAt.toDate().toLocaleDateString()}: ${doc.data().description} (${doc.data().type}) - ₹${doc.data().amount.toFixed(2)}</div>`).join('');
+            }
+        }
+        
+        async function loadBannerContent() {
+            const bannerRef = doc(db, 'siteContent', 'homepage');
+            const docSnap = await getDoc(bannerRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const bannerForm = document.getElementById('banner-form');
+                bannerForm.heroTitle.value = data.heroTitle || '';
+                bannerForm.heroSubtitle.value = data.heroSubtitle || '';
+                bannerForm.heroImageUrl.value = data.heroImageUrl || '';
+                bannerForm.heroButtonText.value = data.heroButtonText || '';
+                bannerForm.heroButtonLink.value = data.heroButtonLink || '';
+            }
+        }
+
+        async function handleBannerFormSubmit(e) {
+            e.preventDefault();
+            const loaderOverlay = document.getElementById('loader-overlay');
+            openModal(loaderOverlay);
+            const bannerForm = document.getElementById('banner-form');
+            const data = {
+                heroTitle: bannerForm.heroTitle.value, heroSubtitle: bannerForm.heroSubtitle.value,
+                heroImageUrl: bannerForm.heroImageUrl.value, heroButtonText: bannerForm.heroButtonText.value,
+                heroButtonLink: bannerForm.heroButtonLink.value,
+            };
+            try { await setDoc(doc(db, 'siteContent', 'homepage'), data, { merge: true }); } 
+            catch (error) { 
+                showMessage(`Error saving banner: ${error}`);
+                console.error("Error saving banner:", error); 
+            }
+            finally { closeModal(loaderOverlay); }
+        }
+    </script>
+</body>
+</html>
