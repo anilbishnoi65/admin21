@@ -44,8 +44,17 @@
     </div>
 
     <div id="admin-dashboard" class="hidden">
-        <div class="flex h-screen bg-gray-100">
-            <aside class="w-64 bg-gray-800 text-white flex flex-col">
+        <div class="relative min-h-screen md:flex">
+             <div class="md:hidden bg-gray-800 text-white flex justify-between items-center p-4 fixed top-0 w-full z-40 shadow-lg">
+                <h1 class="text-xl font-bold">Admin Panel</h1>
+                <button id="hamburger-btn" class="text-2xl focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
+
+            <aside class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
                 <div class="h-16 flex items-center justify-center text-2xl font-bold">Admin Panel</div>
                 <nav class="flex-1 px-4 py-6 space-y-2">
                     <a href="#dashboard" class="sidebar-link active flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-tachometer-alt w-6 mr-3"></i>Dashboard</a>
@@ -62,7 +71,7 @@
                 </div>
             </aside>
 
-            <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <main class="flex-1 p-6 md:p-10 overflow-y-auto pt-20 md:pt-6 md:ml-64">
                 <section id="dashboard-section" class="content-section active">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-gray-500">Total Products</h3><p id="total-products" class="text-3xl font-bold">0</p></div>
@@ -75,7 +84,7 @@
                 </section>
 
                 <section id="products-section" class="content-section">
-                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Products</h1><button id="add-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Product</button></div>
+                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Products</h1><button id="add-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 self-start sm:self-auto">Add Product</button></div>
                      <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price Range</th><th class="px-4 py-3">Keys Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
                 </section>
 
@@ -90,17 +99,17 @@
                 </section>
 
                 <section id="qrcodes-section" class="content-section">
-                    <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Payment QR Codes</h1><button id="add-qrcode-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add QR Code</button></div>
+                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Payment QR Codes</h1><button id="add-qrcode-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 self-start sm:self-auto">Add QR Code</button></div>
                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Image URL</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="qrcodes-table"></tbody></table></div></div>
                 </section>
                 
                 <section id="reviews-section" class="content-section">
-                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Review</button></div>
+                      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 self-start sm:self-auto">Add Review</button></div>
                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Stars</th><th class="px-4 py-3">Text</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="reviews-table"></tbody></table></div></div>
                 </section>
 
                 <section id="users-section" class="content-section">
-                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Users</h1><input type="text" id="user-search" placeholder="Search by email..." class="w-1/3 px-3 py-2 border rounded-md"></div>
+                      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Users</h1><input type="text" id="user-search" placeholder="Search by email..." class="w-full sm:w-1/3 px-3 py-2 border rounded-md"></div>
                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Email</th><th class="px-4 py-3">Wallet Balance</th><th class="px-4 py-3">Joined On</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
                 </section>
 
@@ -157,12 +166,12 @@
         </div>
     </div>
      <div id="user-detail-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen">
-             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 relative">
-                <div class="p-8" id="user-detail-content"></div>
+         <div class="flex items-center justify-center min-h-screen">
+              <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 relative">
+                  <div class="p-6 md:p-8" id="user-detail-content"></div>
              </div>
-        </div>
-    </div>
+         </div>
+     </div>
     <div id="loader-overlay" class="loader-overlay hidden fixed z-[60] inset-0 bg-gray-900 bg-opacity-50 opacity-0 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-5xl text-white"></i></div>
     
     <div id="message-box" class="hidden fixed z-[70] inset-0 bg-gray-900 bg-opacity-60 opacity-0 flex items-center justify-center">
@@ -239,6 +248,7 @@
 
         function initDashboard() {
             setupNavigation();
+            setupMobileNavigation(); // New function for mobile menu
             setupModalListeners();
             loadAllData();
 
@@ -256,6 +266,29 @@
                 }
             });
         }
+        
+        function setupMobileNavigation() {
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const sidebar = document.querySelector('aside');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+            const toggleSidebar = () => {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            };
+
+            hamburgerBtn.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 768) { // Tailwind's `md` breakpoint
+                        toggleSidebar();
+                    }
+                });
+            });
+        }
+
 
         function setupModalListeners() {
             document.getElementById('add-product-btn').addEventListener('click', () => openProductModal());
@@ -280,7 +313,7 @@
             document.getElementById('banner-form').addEventListener('submit', handleBannerFormSubmit);
             document.getElementById('user-search').addEventListener('input', handleUserSearch);
 
-            // NEW: Listener for the generic message box
+            // Listener for the generic message box
             document.getElementById('message-box-close').addEventListener('click', () => {
                 const msgBox = document.getElementById('message-box');
                 closeModal(msgBox);
@@ -408,7 +441,6 @@
         function openModal(modal) { modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
         function closeModal(modal) { modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
         
-        // NEW: Function to show a message to the user
         function showMessage(message) {
             const msgBox = document.getElementById('message-box');
             const msgText = document.getElementById('message-box-text');
@@ -447,10 +479,10 @@
                 const newRow = document.createElement('div');
                 newRow.className = 'variant-row grid grid-cols-12 gap-2 items-center';
                 newRow.innerHTML = `
-                    <div class="col-span-5"><input name="variantName_${variantId}" placeholder="Variant Name (e.g., 1 Month)" value="${variant.name || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
-                    <div class="col-span-3"><input type="number" step="0.01" name="variantPrice_${variantId}" placeholder="Price" value="${variant.price || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
-                    <div class="col-span-3"><input type="number" step="0.01" name="variantDiscountPrice_${variantId}" placeholder="Discount (Optional)" value="${variant.discountPrice || ''}" class="w-full border rounded-md p-2 text-sm"></div>
-                    <div class="col-span-1 text-center"><button type="button" class="remove-variant-btn text-red-500 hover:text-red-700">&times;</button></div>
+                    <div class="col-span-12 sm:col-span-5"><input name="variantName_${variantId}" placeholder="Variant Name (e.g., 1 Month)" value="${variant.name || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
+                    <div class="col-span-5 sm:col-span-3"><input type="number" step="0.01" name="variantPrice_${variantId}" placeholder="Price" value="${variant.price || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
+                    <div class="col-span-5 sm:col-span-3"><input type="number" step="0.01" name="variantDiscountPrice_${variantId}" placeholder="Discount (Optional)" value="${variant.discountPrice || ''}" class="w-full border rounded-md p-2 text-sm"></div>
+                    <div class="col-span-2 sm:col-span-1 text-right sm:text-center"><button type="button" class="remove-variant-btn text-red-500 hover:text-red-700 text-2xl leading-none">&times;</button></div>
                 `;
                 variantsContainer.appendChild(newRow);
                 newRow.querySelector('.remove-variant-btn').addEventListener('click', () => newRow.remove());
@@ -584,20 +616,20 @@
             if (!user) return;
             document.getElementById('user-detail-content').innerHTML = `
                 <button type="button" class="close-modal-btn absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-800" data-modal-id="user-detail-modal">&times;</button>
-                <div class="flex justify-between items-start">
-                    <h3 class="text-2xl font-bold mb-4">${user.email}</h3>
-                    <a href="mailto:${user.email}" class="bg-gray-200 text-gray-800 py-2 px-4 rounded-md text-sm hover:bg-gray-300"><i class="fas fa-envelope mr-2"></i>Send Email</a>
+                <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
+                    <h3 class="text-2xl font-bold mb-4 break-all">${user.email}</h3>
+                    <a href="mailto:${user.email}" class="flex-shrink-0 bg-gray-200 text-gray-800 py-2 px-4 rounded-md text-sm hover:bg-gray-300"><i class="fas fa-envelope mr-2"></i>Send Email</a>
                 </div>
                 <div class="mb-6"><p class="text-gray-600">Current Balance: <span class="font-bold text-xl">₹${(user.walletBalance || 0).toFixed(2)}</span></p></div>
                 <form id="wallet-adjustment-form" class="mb-6 p-4 border rounded-md">
                      <h4 class="font-semibold mb-2">Adjust Wallet</h4>
-                     <div class="flex space-x-2">
-                         <input type="number" step="0.01" id="adjustment-amount" placeholder="Amount (e.g., 50 or -50)" class="flex-grow border rounded-md p-2" required>
-                         <input type="text" id="adjustment-reason" placeholder="Reason (e.g., Refund)" class="flex-grow border rounded-md p-2" required>
-                         <button type="submit" class="bg-green-500 text-white px-4 rounded-md">Adjust</button>
+                     <div class="flex flex-col sm:flex-row gap-2">
+                         <input type="number" step="0.01" id="adjustment-amount" placeholder="Amount (e.g., 50 or -50)" class="w-full border rounded-md p-2" required>
+                         <input type="text" id="adjustment-reason" placeholder="Reason (e.g., Refund)" class="w-full border rounded-md p-2" required>
+                         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md flex-shrink-0">Adjust</button>
                      </div>
                 </form>
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div><h4 class="font-semibold mb-2">Order History</h4><div id="user-orders-history" class="max-h-40 overflow-y-auto">Loading...</div></div>
                     <div><h4 class="font-semibold mb-2">Wallet History</h4><div id="user-wallet-history" class="max-h-40 overflow-y-auto">Loading...</div></div>
                 </div>`;
@@ -618,8 +650,7 @@
                 const id = e.target.dataset.id; if (!id) return;
                 if (e.target.classList.contains('edit-btn')) { const data = dataMap.get(id); if (data) openFn({ id, ...data }); }
                 if (e.target.classList.contains('delete-btn')) { 
-                    // Using the new message box instead of confirm()
-                    if (await showConfirm(`Are you sure you want to delete this ${type}?`)) { 
+                    if (confirm(`Are you sure you want to delete this ${type}?`)) { 
                         await deleteFn(doc(db, collectionName, id)); 
                     }
                 }
@@ -628,7 +659,6 @@
         }
         function attachUserActions() { document.querySelectorAll('.view-user-btn').forEach(btn => btn.addEventListener('click', e => openUserDetailModal(e.target.dataset.id))); }
         
-        // **FIX**: approveVerification now handles the "User not found" error gracefully.
         async function approveVerification(verificationId, userId, amount) {
             const loaderOverlay = document.getElementById('loader-overlay');
             openModal(loaderOverlay);
@@ -637,9 +667,7 @@
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(userRef);
-                    // This is where the error was happening.
                     if (!userDoc.exists()) {
-                        // This throws a specific error that we can catch.
                         throw "User document not found!";
                     }
                     const newBalance = (userDoc.data().walletBalance || 0) + amount;
@@ -649,7 +677,6 @@
                     transaction.set(walletTxRef, { userId: userId, amount: amount, type: 'credit', description: 'Wallet top-up (Approved)', createdAt: serverTimestamp() });
                 });
             } catch (error) {
-                // Now we catch the specific error and show a helpful message.
                 if (error === "User document not found!") {
                     showMessage("Approval Failed: The user for this payment request could not be found in the database. The user may have been deleted.");
                 } else {
