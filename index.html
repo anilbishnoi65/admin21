@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>digi click - Admin Panel</title>
+    <title>digiclick - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .modal, .loader-overlay, #message-box { transition: opacity 0.3s ease; }
+        .modal, .loader-overlay { transition: opacity 0.3s ease; }
         .sidebar-link { transition: background-color 0.2s, color 0.2s; }
         .sidebar-link.active { background-color: #4f46e5; color: white; }
         .content-section { display: none; }
@@ -25,6 +25,7 @@
 </head>
 <body class="bg-gray-100">
 
+    <!-- Login Screen -->
     <div id="login-screen" class="flex items-center justify-center min-h-screen bg-gray-200">
         <div class="w-full max-w-sm p-8 bg-white rounded-lg shadow-md">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Admin Panel Login</h2>
@@ -43,35 +44,30 @@
         </div>
     </div>
 
+    <!-- Main Dashboard -->
     <div id="admin-dashboard" class="hidden">
-        <div class="relative min-h-screen md:flex">
-             <div class="md:hidden bg-gray-800 text-white flex justify-between items-center p-4 fixed top-0 w-full z-40 shadow-lg">
-                <h1 class="text-xl font-bold">Admin Panel</h1>
-                <button id="hamburger-btn" class="text-2xl focus:outline-none">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-            
-            <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
-
-            <aside class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div class="flex h-screen bg-gray-100">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-gray-800 text-white flex flex-col">
                 <div class="h-16 flex items-center justify-center text-2xl font-bold">Admin Panel</div>
                 <nav class="flex-1 px-4 py-6 space-y-2">
                     <a href="#dashboard" class="sidebar-link active flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-tachometer-alt w-6 mr-3"></i>Dashboard</a>
                     <a href="#products" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-box-open w-6 mr-3"></i>Products</a>
                     <a href="#orders" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-receipt w-6 mr-3"></i>Orders</a>
                     <a href="#verifications" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700 relative"><i class="fas fa-check-double w-6 mr-3"></i>Verifications <span id="pending-verifications-badge" class="absolute right-2 top-1/2 -translate-y-1/2 bg-yellow-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span></a>
-                    <a href="#qrcodes" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-qrcode w-6 mr-3"></i>QR Codes</a>
                     <a href="#reviews" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-star w-6 mr-3"></i>Reviews</a>
                     <a href="#users" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-users w-6 mr-3"></i>Users</a>
                     <a href="#marketing" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-bullhorn w-6 mr-3"></i>Marketing</a>
+                    <a href="#paymentQRs" class="sidebar-link flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i class="fas fa-qrcode w-6 mr-3"></i>Payment QRs</a>
                 </nav>
                 <div class="p-4 border-t border-gray-700">
                     <button id="logout-btn" class="w-full flex items-center px-4 py-2 rounded-md text-red-400 hover:bg-red-500 hover:text-white"><i class="fas fa-sign-out-alt w-6 mr-3"></i>Logout</button>
                 </div>
             </aside>
 
-            <main class="flex-1 p-6 md:p-10 overflow-y-auto pt-20 md:pt-6 md:ml-64">
+            <!-- Main content -->
+            <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+                <!-- Dashboard Section -->
                 <section id="dashboard-section" class="content-section active">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-gray-500">Total Products</h3><p id="total-products" class="text-3xl font-bold">0</p></div>
@@ -83,39 +79,41 @@
                     <div class="bg-white p-6 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3">User</th><th class="px-6 py-3">Amount</th><th class="px-6 py-3">Transaction ID</th><th class="px-6 py-3">Date</th><th class="px-6 py-3">Actions</th></tr></thead><tbody id="recent-verifications-table"></tbody></table></div></div>
                 </section>
 
+                <!-- Products Section -->
                 <section id="products-section" class="content-section">
-                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Products</h1><button id="add-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 self-start sm:self-auto">Add Product</button></div>
-                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price Range</th><th class="px-4 py-3">Keys Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Products</h1><button id="add-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Product</button></div>
+                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price</th><th class="px-4 py-3">Keys Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
                 </section>
 
+                <!-- Orders Section -->
                 <section id="orders-section" class="content-section">
                     <h1 class="text-3xl font-bold mb-6">Orders</h1>
                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">User Email</th><th class="px-4 py-3">Phone</th><th class="px-4 py-3">Total</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Items</th></tr></thead><tbody id="orders-table"></tbody></table></div></div>
                 </section>
 
+                <!-- Verifications Section -->
                 <section id="verifications-section" class="content-section">
                     <h1 class="text-3xl font-bold mb-6">Payment Verifications</h1>
                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">User</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Transaction ID</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="verifications-table"></tbody></table></div></div>
                 </section>
 
-                <section id="qrcodes-section" class="content-section">
-                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Payment QR Codes</h1><button id="add-qrcode-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 self-start sm:self-auto">Add QR Code</button></div>
-                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Image URL</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="qrcodes-table"></tbody></table></div></div>
-                </section>
-                
+                <!-- Reviews Section -->
                 <section id="reviews-section" class="content-section">
-                      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 self-start sm:self-auto">Add Review</button></div>
-                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Stars</th><th class="px-4 py-3">Text</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="reviews-table"></tbody></table></div></div>
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Review</button></div>
+                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Stars</th><th class="px-4 py-3">Text</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="reviews-table"></tbody></table></div></div>
                 </section>
 
+                <!-- Users Section -->
                 <section id="users-section" class="content-section">
-                      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"><h1 class="text-3xl font-bold">Users</h1><input type="text" id="user-search" placeholder="Search by email..." class="w-full sm:w-1/3 px-3 py-2 border rounded-md"></div>
-                    <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Email</th><th class="px-4 py-3">Wallet Balance</th><th class="px-4 py-3">Joined On</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Users</h1><input type="text" id="user-search" placeholder="Search by email..." class="w-1/3 px-3 py-2 border rounded-md"></div>
+                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Email</th><th class="px-4 py-3">Wallet Balance</th><th class="px-4 py-3">Joined On</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
                 </section>
 
+                <!-- Marketing Section -->
                 <section id="marketing-section" class="content-section">
                     <h1 class="text-3xl font-bold mb-6">Marketing</h1>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Homepage Banner Management -->
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-bold mb-4">Homepage Banner</h2>
                             <form id="banner-form" class="space-y-4">
@@ -127,16 +125,24 @@
                                 <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Save Banner</button>
                             </form>
                         </div>
+                        <!-- Coupons Management -->
                         <div class="bg-white p-6 rounded-lg shadow-md">
                             <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Coupons</h2><button id="add-coupon-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 text-sm">Add Coupon</button></div>
                             <div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Code</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Value</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="coupons-table"></tbody></table></div>
                         </div>
                     </div>
                 </section>
+
+                <!-- Payment QRs Section -->
+                <section id="paymentQRs-section" class="content-section">
+                     <div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold">Payment QRs</h1><button id="add-qr-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add QR Code</button></div>
+                     <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Image URL</th><th class="px-4 py-3">Preview</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="qrs-table"></tbody></table></div></div>
+                </section>
             </main>
         </div>
     </div>
     
+    <!-- Modals -->
     <div id="product-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl m-4">
@@ -158,34 +164,28 @@
             </div>
         </div>
     </div>
-    <div id="qrcode-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
+    <div id="qr-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-lg m-4">
-                <form id="qrcode-form" class="p-6"><h3 id="qrcode-modal-title" class="text-xl font-semibold mb-4">Add QR Code</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-qrcode-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
+                <form id="qr-form" class="p-6"><h3 id="qr-modal-title" class="text-xl font-semibold mb-4">Add QR Code</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-qr-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
             </div>
         </div>
     </div>
      <div id="user-detail-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
-         <div class="flex items-center justify-center min-h-screen">
-              <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 relative">
-                  <div class="p-6 md:p-8" id="user-detail-content"></div>
+        <div class="flex items-center justify-center min-h-screen">
+             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl m-4 relative">
+                 <div class="p-8" id="user-detail-content"></div>
              </div>
-         </div>
-     </div>
-    <div id="loader-overlay" class="loader-overlay hidden fixed z-[60] inset-0 bg-gray-900 bg-opacity-50 opacity-0 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-5xl text-white"></i></div>
-    
-    <div id="message-box" class="hidden fixed z-[70] inset-0 bg-gray-900 bg-opacity-60 opacity-0 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm m-4 p-6 text-center">
-            <p id="message-box-text" class="text-gray-800 mb-6"></p>
-            <button id="message-box-close" class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700">OK</button>
         </div>
     </div>
-
+    <div id="loader-overlay" class="loader-overlay hidden fixed z-[60] inset-0 bg-gray-900 bg-opacity-50 opacity-0 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-5xl text-white"></i></div>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, addDoc, updateDoc, deleteDoc, serverTimestamp, runTransaction, query, orderBy, getDocs, where, writeBatch, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // IMPORTANT: Use the same Firebase config as your website
         const firebaseConfig = {
             apiKey: "AIzaSyCw5iau9JmPXtAHB6Ty9zUDS4P5NxKWXAI",
             authDomain: "digi-2eb26.firebaseapp.com",
@@ -195,7 +195,7 @@
             appId: "1:374375506797:web:13d102e059e194ceaf7064"
         };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+        window.auth = getAuth(app); // Make auth global for debugging
         const db = getFirestore(app);
 
         // --- State ---
@@ -204,11 +204,11 @@
         let reviewsMap = new Map();
         let userMap = new Map();
         let couponsMap = new Map();
-        let qrcodesMap = new Map();
+        let paymentQRsMap = new Map(); // For QR Codes
         let currentProduct = null;
         let currentReview = null;
         let currentCoupon = null;
-        let currentQRCode = null;
+        let currentQr = null; // For QR Codes
         
         // --- App Entry Point ---
         document.addEventListener('DOMContentLoaded', main);
@@ -221,6 +221,7 @@
             
             onAuthStateChanged(auth, user => {
                 if (user) {
+                    // TODO: Add admin role check here for security
                     loginScreen.classList.add('hidden');
                     adminDashboard.classList.remove('hidden');
                     initDashboard();
@@ -239,7 +240,8 @@
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
                 } catch (error) {
-                    loginError.textContent = error.message;
+                    console.error("Login Error:", error.code); // Log error code
+                    loginError.textContent = "Invalid email or password.";
                 }
             });
 
@@ -248,47 +250,9 @@
 
         function initDashboard() {
             setupNavigation();
-            setupMobileNavigation(); // New function for mobile menu
             setupModalListeners();
             loadAllData();
-
-            const mainContent = document.querySelector('main');
-            mainContent.addEventListener('click', e => {
-                const target = e.target;
-                const id = target.dataset.id;
-                if (!id) return;
-
-                if (target.classList.contains('approve-btn')) {
-                    approveVerification(id, target.dataset.userId, Number(target.dataset.amount));
-                }
-                if (target.classList.contains('reject-btn')) {
-                    rejectVerification(id);
-                }
-            });
         }
-        
-        function setupMobileNavigation() {
-            const hamburgerBtn = document.getElementById('hamburger-btn');
-            const sidebar = document.querySelector('aside');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarLinks = document.querySelectorAll('.sidebar-link');
-
-            const toggleSidebar = () => {
-                sidebar.classList.toggle('-translate-x-full');
-                sidebarOverlay.classList.toggle('hidden');
-            };
-
-            hamburgerBtn.addEventListener('click', toggleSidebar);
-            sidebarOverlay.addEventListener('click', toggleSidebar);
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 768) { // Tailwind's `md` breakpoint
-                        toggleSidebar();
-                    }
-                });
-            });
-        }
-
 
         function setupModalListeners() {
             document.getElementById('add-product-btn').addEventListener('click', () => openProductModal());
@@ -297,8 +261,10 @@
             document.getElementById('cancel-review-modal').addEventListener('click', () => closeModal(document.getElementById('review-modal')));
             document.getElementById('add-coupon-btn').addEventListener('click', () => openCouponModal());
             document.getElementById('cancel-coupon-modal').addEventListener('click', () => closeModal(document.getElementById('coupon-modal')));
-            document.getElementById('add-qrcode-btn').addEventListener('click', () => openQRCodeModal());
-            document.getElementById('cancel-qrcode-modal').addEventListener('click', () => closeModal(document.getElementById('qrcode-modal')));
+            
+            // Add listeners for the new QR modal
+            document.getElementById('add-qr-btn').addEventListener('click', () => openQrModal());
+            document.getElementById('cancel-qr-modal').addEventListener('click', () => closeModal(document.getElementById('qr-modal')));
             
             document.getElementById('user-detail-modal').addEventListener('click', (e) => {
                 if(e.target.matches('.close-modal-btn')) {
@@ -309,15 +275,9 @@
             document.getElementById('product-form').addEventListener('submit', handleProductFormSubmit);
             document.getElementById('review-form').addEventListener('submit', handleReviewFormSubmit);
             document.getElementById('coupon-form').addEventListener('submit', handleCouponFormSubmit);
-            document.getElementById('qrcode-form').addEventListener('submit', handleQRCodeFormSubmit);
+            document.getElementById('qr-form').addEventListener('submit', handleQrFormSubmit); // Add handler for QR form
             document.getElementById('banner-form').addEventListener('submit', handleBannerFormSubmit);
             document.getElementById('user-search').addEventListener('input', handleUserSearch);
-
-            // Listener for the generic message box
-            document.getElementById('message-box-close').addEventListener('click', () => {
-                const msgBox = document.getElementById('message-box');
-                closeModal(msgBox);
-            });
         }
         
         function setupNavigation() {
@@ -336,166 +296,183 @@
         }
         
         function loadAllData() {
+            // Load users first to populate userMap for other collections
             loadUsers().then(() => {
-                ['products', 'orders', 'paymentVerifications', 'reviews', 'coupons', 'paymentQRs'].forEach(loadCollectionData);
+                // These can now run in parallel
+                loadCollectionData('products', 'products-table', renderProductRow, productsMap, { openFn: openProductModal });
+                loadCollectionData('reviews', 'reviews-table', renderReviewRow, reviewsMap, { openFn: openReviewModal });
+                loadCollectionData('coupons', 'coupons-table', renderCouponRow, couponsMap, { openFn: openCouponModal });
+                loadCollectionData('paymentQRs', 'qrs-table', renderQrRow, paymentQRsMap, { openFn: openQrModal }); // Add call for Payment QRs
+                loadCollectionData('orders', 'orders-table', renderOrderRow, new Map());
+                loadCollectionData('paymentVerifications', 'verifications-table', renderVerificationRow, new Map(), { onSnapshotCallback: updateVerificationUI });
+                
                 loadDashboardAnalytics();
                 loadBannerContent();
+            }).catch(err => {
+                // This will catch the permission error from loadUsers() and stop the unhandled rejection
+                console.error("Failed to load initial user data. This is likely a security rule issue.", err);
+                // Use a non-blocking alert
+                setTimeout(() => {
+                    alert("CRITICAL ERROR: Failed to load user data.\n\nThis is likely due to Firestore Security Rules. Please ensure your admin account UID is correctly added to the 'firestore.rules' file and deployed.");
+                }, 500);
             });
         }
 
-        function loadCollectionData(collectionName) {
-            const tableIdMap = {
-                products: 'products-table', reviews: 'reviews-table', coupons: 'coupons-table',
-                orders: 'orders-table', paymentVerifications: 'verifications-table',
-                paymentQRs: 'qrcodes-table'
-            };
-            const renderMap = {
-                products: renderProductRow, reviews: renderReviewRow, coupons: renderCouponRow,
-                orders: renderOrderRow, paymentVerifications: renderVerificationRow,
-                paymentQRs: renderQRCodeRow
-            };
-            const dataMap = {
-                products: productsMap, reviews: reviewsMap, coupons: couponsMap,
-                orders: new Map(), paymentVerifications: new Map(),
-                paymentQRs: qrcodesMap
-            };
-              const openFnMap = { products: openProductModal, reviews: openReviewModal, coupons: openCouponModal, paymentQRs: openQRCodeModal };
+        function loadCollectionData(collectionName, tableId, renderFn, dataMap, options = {}) {
+            const { openFn, onSnapshotCallback } = options;
+            // Use orderBy createdAt if it exists, otherwise just load
+            const q = query(collection(db, collectionName)); // Simplified query
 
-            const q = query(collection(db, collectionName));
-            onSnapshot(q, snapshot => {
-                dataMap[collectionName].clear();
-                const table = document.getElementById(tableIdMap[collectionName]);
-                if (!table) return; // Failsafe if element isn't on the page
+            // Add error handler to onSnapshot to catch permissions errors here
+            onSnapshot(q, (snapshot) => {
+                dataMap.clear();
+                const table = document.getElementById(tableId);
+                if (!table) return;
+
+                // Sort by createdAt client-side for robustness
                 const docs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 
                 table.innerHTML = docs.map(doc => {
-                    dataMap[collectionName].set(doc.id, doc.data());
-                    return renderMap[collectionName](doc.id, doc.data());
+                    dataMap.set(doc.id, { id: doc.id, ...doc.data() });
+                    return renderFn(doc.id, doc.data());
                 }).join('');
 
-                if (collectionName === 'paymentVerifications') {
-                    const verifications = docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    const pending = verifications.filter(v => v.status === 'pending');
-                    document.getElementById('recent-verifications-table').innerHTML = pending.slice(0, 5).map(v => renderRecentVerificationRow(v.id, v)).join('');
-                    
-                    const badge = document.getElementById('pending-verifications-badge');
-                    badge.textContent = pending.length;
-                    badge.classList.toggle('hidden', pending.length === 0);
-                } else if (openFnMap[collectionName]) {
-                    const type = collectionName === 'paymentQRs' ? 'qr code' : collectionName.slice(0, -1);
-                    attachTableListeners(tableIdMap[collectionName], type, openFnMap[collectionName], deleteDoc, collectionName, dataMap[collectionName]);
+                if (onSnapshotCallback) {
+                    onSnapshotCallback(docs);
                 }
+
+                if (openFn) {
+                    attachTableListeners(tableId, collectionName.slice(0, -1), openFn, deleteDoc, collectionName, dataMap);
+                }
+            }, (error) => { // This is the error handler for onSnapshot
+                console.error(`Error loading collection ${collectionName}:`, error);
+                // Don't alert for every collection, the user one is enough
+                // This prevents the UNHANDLEDREJECTION
             });
         }
         
         function loadUsers() {
-            return new Promise((resolve) => {
-                onSnapshot(query(collection(db, 'users')), snapshot => {
+            return new Promise((resolve, reject) => {
+                const q = query(collection(db, 'users')); // Simplified query
+                
+                // Add error handler to this onSnapshot call
+                onSnapshot(q, (snapshot) => {
                     userMap.clear();
-                    const docs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
-                    allUsers = docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    // Sort client-side
+                    allUsers = snapshot.docs
+                        .map(doc => ({ id: doc.id, ...doc.data() }))
+                        .sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+                        
                     allUsers.forEach(user => userMap.set(user.id, user.email));
                     renderUsers(allUsers);
                     resolve();
+                }, (err) => { // This is the error handler
+                    console.error("Error loading users:", err);
+                    reject(err); // Reject the promise to trigger the .catch() in loadAllData()
                 });
             });
         }
 
         const loadDashboardAnalytics = () => {
-            ['products', 'users', 'orders'].forEach(c => onSnapshot(collection(db, c), s => document.getElementById(`total-${c}`).textContent = s.size));
-            onSnapshot(collection(db, 'paymentVerifications'), s => document.getElementById('pending-verifications').textContent = s.docs.filter(d => d.data().status === 'pending').length);
+            // Add error handlers to all dashboard listeners
+            const collectionsToCount = ['products', 'users', 'orders'];
+            collectionsToCount.forEach(c => {
+                onSnapshot(collection(db, c), (s) => {
+                    const el = document.getElementById(`total-${c}`);
+                    if (el) el.textContent = s.size;
+                }, (err) => { // Error handler
+                    console.error(`Analytics error (${c}):`, err);
+                    const el = document.getElementById(`total-${c}`);
+                    if (el) el.textContent = 'Error';
+                });
+            });
+
+            onSnapshot(query(collection(db, 'paymentVerifications'), where("status", "==", "pending")), (s) => {
+                const el = document.getElementById('pending-verifications');
+                if (el) el.textContent = s.size;
+            }, (err) => { // Error handler
+                console.error("Analytics error (verifications):", err);
+                const el = document.getElementById('pending-verifications');
+                if (el) el.textContent = 'Error';
+            });
         };
         
+        function updateVerificationUI(docs) {
+            const verifications = docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const pending = verifications.filter(v => v.status === 'pending');
+            
+            const recentTable = document.getElementById('recent-verifications-table');
+            if (recentTable) {
+                recentTable.innerHTML = pending.slice(0, 5).map(v => renderRecentVerificationRow(v.id, v)).join('');
+            }
+            
+            attachVerificationListeners('verifications-table');
+            attachVerificationListeners('recent-verifications-table');
+            
+            const badge = document.getElementById('pending-verifications-badge');
+            if (badge) {
+                badge.textContent = pending.length;
+                badge.classList.toggle('hidden', pending.length === 0);
+            }
+        }
+
         function renderUsers(usersToRender) {
              const table = document.getElementById('users-table');
+             if (!table) return;
              table.innerHTML = usersToRender.map(user => renderUserRow(user.id, user)).join('');
              attachUserActions();
         }
 
         function handleUserSearch(e) {
             const searchTerm = e.target.value.toLowerCase();
-            const filteredUsers = allUsers.filter(user => user.email.toLowerCase().includes(searchTerm));
+            const filteredUsers = allUsers.filter(user => user.email && user.email.toLowerCase().includes(searchTerm));
             renderUsers(filteredUsers);
         }
 
-        // --- RENDER FUNCTIONS ---
-        const renderProductRow = (id, data) => {
-            let priceText = 'N/A';
-            if (data.variants && data.variants.length > 0) {
-                const prices = data.variants.map(v => v.price);
-                const minPrice = Math.min(...prices);
-                const maxPrice = Math.max(...prices);
-                priceText = minPrice === maxPrice ? `₹${minPrice}` : `₹${minPrice} - ₹${maxPrice}`;
-            }
-            return `<tr><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3">${data.type}</td><td class="px-4 py-3">${priceText}</td><td class="px-4 py-3">${data.keys?.length || 0}</td><td class="px-4 py-3"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" data-id="${id}" class="sr-only peer featured-toggle" ${data.isFeatured ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div></label></td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
-        }
-        const renderOrderRow = (id, data) => `<tr><td class="px-4 py-3">${data.orderId || id.slice(0, 8)+'...'}</td><td class="px-4 py-3">${userMap.get(data.userId) || 'N/A'}</td><td class="px-4 py-3">${data.phoneNumber || 'N/A'}</td><td class="px-4 py-3">₹${data.total.toFixed(2)}</td><td class="px-4 py-3">${data.createdAt.toDate().toLocaleDateString()}</td><td class="px-4 py-3">${data.items.length}</td></tr>`;
-        const renderVerificationRow = (id, data) => `<tr><td class="px-4 py-3">${data.userEmail}</td><td class="px-4 py-3">₹${data.amount}</td><td class="px-4 py-3">${data.transactionId}</td><td class="px-4 py-3"><span class="status-badge status-${data.status}">${data.status}</span></td><td class="px-4 py-3">${data.createdAt.toDate().toLocaleDateString()}</td><td class="px-4 py-3 space-x-2">${data.status === 'pending' ? `<button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600">Approve</button><button data-id="${id}" class="reject-btn text-red-600">Reject</button>` : ''}</td></tr>`;
-        const renderRecentVerificationRow = (id, data) => `<tr><td class="px-6 py-4">${data.userEmail}</td><td class="px-6 py-4">₹${data.amount}</td><td class="px-6 py-4">${data.transactionId}</td><td class="px-6 py-4">${data.createdAt.toDate().toLocaleDateString()}</td><td class="px-6 py-4 space-x-2"><button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600">Approve</button><button data-id="${id}" class="reject-btn text-red-600">Reject</button></td></tr>`;
-        const renderReviewRow = (id, data) => `<tr><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3">${data.stars}</td><td class="px-4 py-3 truncate max-w-xs">${data.text}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
-        const renderUserRow = (id, data) => `<tr><td class="px-4 py-3">${data.email}</td><td class="px-4 py-3">₹${(data.walletBalance || 0).toFixed(2)}</td><td class="px-4 py-3">${data.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td><td class="px-4 py-3"><button data-id="${id}" class="view-user-btn text-indigo-600">View</button></td></tr>`;
-        const renderCouponRow = (id, data) => `<tr><td class="px-4 py-3">${data.code}</td><td class="px-4 py-3">${data.type}</td><td class="px-4 py-3">${data.type === 'percentage' ? data.value + '%' : '₹' + data.value}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
-        const renderQRCodeRow = (id, data) => `<tr><td class="px-4 py-3">${data.name}</td><td class="px-4 py-3 truncate max-w-sm">${data.imageUrl}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600">Edit</button><button data-id="${id}" class="delete-btn text-red-600">Delete</button></td></tr>`;
+        // --- Render Functions ---
+        const renderProductRow = (id, data) => `<tr><td class="px-4 py-3">${data.name || 'N/A'}</td><td class="px-4 py-3">${data.type || 'N/A'}</td><td class="px-4 py-3">₹${data.price || 0}</td><td class="px-4 py-3">${data.keys?.length || 0}</td><td class="px-4 py-3"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" data-id="${id}" class="sr-only peer featured-toggle" ${data.isFeatured ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div></label></td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-800">Edit</button><button data-id="${id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button></td></tr>`;
+        
+        const renderOrderRow = (id, data) => `<tr><td class="px-4 py-3">${data.orderId || id.slice(0, 8)+'...'}</td><td class="px-4 py-3">${userMap.get(data.userId) || data.userId?.slice(0, 10) + '...' || 'N/A'}</td><td class="px-4 py-3">${data.phoneNumber || 'N/A'}</td><td class="px-4 py-3">₹${(data.total || 0).toFixed(2)}</td><td class="px-4 py-3">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-4 py-3">${data.items?.length || 0}</td></tr>`;
+        
+        const renderVerificationRow = (id, data) => `<tr><td class="px-4 py-3">${data.userEmail || 'N/A'}</td><td class="px-4 py-3">₹${data.amount || 0}</td><td class="px-4 py-3">${data.transactionId || 'N/A'}</td><td class="px-4 py-3"><span class="status-badge status-${data.status || 'pending'}">${data.status || 'pending'}</span></td><td class="px-4 py-3">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-4 py-3 space-x-2">${data.status === 'pending' ? `<button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600 hover:text-green-800">Approve</button><button data-id="${id}" class="reject-btn text-red-600 hover:text-red-800">Reject</button>` : ''}</td></tr>`;
+        
+        const renderRecentVerificationRow = (id, data) => `<tr><td class="px-6 py-4">${data.userEmail || 'N/A'}</td><td class="px-6 py-4">₹${data.amount || 0}</td><td class="px-6 py-4">${data.transactionId || 'N/A'}</td><td class="px-6 py-4">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-6 py-4 space-x-2"><button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600 hover:text-green-800">Approve</button><button data-id="${id}" class="reject-btn text-red-600 hover:text-red-800">Reject</button></td></tr>`;
+        
+        const renderReviewRow = (id, data) => `<tr><td class="px-4 py-3">${data.name || 'N/A'}</td><td class="px-4 py-3">${data.stars || 0}</td><td class="px-4 py-3 truncate max-w-xs">${data.text || ''}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-800">Edit</button><button data-id="${id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button></td></tr>`;
+        
+        const renderUserRow = (id, data) => `<tr><td class="px-4 py-3">${data.email || 'N/A'}</td><td class="px-4 py-3">₹${(data.walletBalance || 0).toFixed(2)}</td><td class="px-4 py-3">${data.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td><td class="px-4 py-3"><button data-id="${id}" class="view-user-btn text-indigo-600 hover:text-indigo-800">View</button></td></tr>`;
+        
+        const renderCouponRow = (id, data) => `<tr><td class="px-4 py-3">${data.code || 'N/A'}</td><td class="px-4 py-3">${data.type || 'N/A'}</td><td class="px-4 py-3">${data.type === 'percentage' ? (data.value || 0) + '%' : '₹' + (data.value || 0)}</td><td class="px-4 py-3 space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-800">Edit</button><button data-id="${id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button></td></tr>`;
+
+        const renderQrRow = (id, data) => `<tr>
+            <td class="px-4 py-3">${data.name || 'N/A'}</td>
+            <td class="px-4 py-3 truncate max-w-xs">${data.imageUrl || 'N/A'}</td>
+            <td class="px-4 py-3"><img src="${data.imageUrl || 'https://placehold.co/40x40/e2e8f0/64748b?text=QR'}" alt="${data.name}" class="w-10 h-10 object-cover rounded-md border"></td>
+            <td class="px-4 py-3 space-x-2">
+                <button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-800">Edit</button>
+                <button data-id="${id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button>
+            </td>
+        </tr>`;
 
         // --- MODAL & FORM LOGIC ---
         function openModal(modal) { modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
         function closeModal(modal) { modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
         
-        function showMessage(message) {
-            const msgBox = document.getElementById('message-box');
-            const msgText = document.getElementById('message-box-text');
-            msgText.textContent = message;
-            openModal(msgBox);
-        }
-
         function openProductModal(product = null) {
             currentProduct = product;
             const productModal = document.getElementById('product-modal');
-            const formContent = productModal.querySelector('.space-y-4');
             document.getElementById('product-modal-title').textContent = product ? 'Edit Product' : 'Add Product';
-
-            formContent.innerHTML = `
+            productModal.querySelector('.space-y-4').innerHTML = `
                 <div><label class="font-medium">Name</label><input name="name" value="${product?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
                 <div><label class="font-medium">Description</label><textarea name="description" class="mt-1 block w-full border rounded-md p-2 h-24">${product?.description || ''}</textarea></div>
-                <div><label class="font-medium">Type</label><select name="type" class="mt-1 block w-full border rounded-md p-2"><option ${product?.type === 'OTT' ? 'selected' : ''}>OTT</option><option ${product?.type === 'Software' ? 'selected' : ''}>Software</option></select></div>
-                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${product?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2"></div>
-                
-                <div class="border-t pt-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="font-medium">Variants</label>
-                        <button type="button" id="add-variant-btn" class="text-sm bg-indigo-500 text-white py-1 px-3 rounded-md hover:bg-indigo-600">Add Variant</button>
-                    </div>
-                    <div id="variants-container" class="space-y-3"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="font-medium">Type</label><select name="type" class="mt-1 block w-full border rounded-md p-2"><option ${product?.type === 'OTT' ? 'selected' : ''}>OTT</option><option ${product?.type === 'Software' ? 'selected' : ''}>Software</option></select></div>
+                    <div><label class="font-medium">Price</label><input type="number" step="0.01" name="price" value="${product?.price || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
                 </div>
-
-                <div><label class="font-medium">Product Keys (one per line)</label><textarea name="keys" class="mt-1 block w-full border rounded-md p-2 h-32">${product?.keys?.join('\n') || ''}</textarea></div>
-                <div class="flex items-center"><input type="checkbox" name="isFeatured" ${product?.isFeatured ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"><label>Featured on Homepage?</label></div>
-            `;
-            
-            const variantsContainer = formContent.querySelector('#variants-container');
-            
-            const addVariantInputRow = (variant = {}) => {
-                const variantId = Date.now();
-                const newRow = document.createElement('div');
-                newRow.className = 'variant-row grid grid-cols-12 gap-2 items-center';
-                newRow.innerHTML = `
-                    <div class="col-span-12 sm:col-span-5"><input name="variantName_${variantId}" placeholder="Variant Name (e.g., 1 Month)" value="${variant.name || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
-                    <div class="col-span-5 sm:col-span-3"><input type="number" step="0.01" name="variantPrice_${variantId}" placeholder="Price" value="${variant.price || ''}" class="w-full border rounded-md p-2 text-sm" required></div>
-                    <div class="col-span-5 sm:col-span-3"><input type="number" step="0.01" name="variantDiscountPrice_${variantId}" placeholder="Discount (Optional)" value="${variant.discountPrice || ''}" class="w-full border rounded-md p-2 text-sm"></div>
-                    <div class="col-span-2 sm:col-span-1 text-right sm:text-center"><button type="button" class="remove-variant-btn text-red-500 hover:text-red-700 text-2xl leading-none">&times;</button></div>
-                `;
-                variantsContainer.appendChild(newRow);
-                newRow.querySelector('.remove-variant-btn').addEventListener('click', () => newRow.remove());
-            };
-            
-            if (product && product.variants && product.variants.length > 0) {
-                product.variants.forEach(addVariantInputRow);
-            } else {
-                addVariantInputRow();
-            }
-
-            formContent.querySelector('#add-variant-btn').addEventListener('click', () => addVariantInputRow());
-
+                <div><label class="font-medium">Discount Price (optional)</label><input type="number" step="0.01" name="discountPrice" value="${product?.discountPrice || ''}" class="mt-1 block w-full border rounded-md p-2"></div>
+                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${product?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2"></div>
+                <div><label class="font-medium">Product Keys (one per line)</label><textarea name="keys" class="mt-1 block w-full border rounded-md p-2 h-32">${product?.keys?.join('\\n') || ''}</textarea></div>
+                <div class="flex items-center"><input type="checkbox" name="isFeatured" ${product?.isFeatured ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"><label>Featured on Homepage?</label></div>`;
             openModal(productModal);
         }
         
@@ -504,36 +481,20 @@
             const productModal = document.getElementById('product-modal');
             const formData = new FormData(e.target);
             const keys = formData.get('keys').split('\n').map(k => k.trim()).filter(k => k);
-            
-            const variants = [];
-            document.querySelectorAll('.variant-row').forEach(row => {
-                const nameInput = row.querySelector('input[name^="variantName"]');
-                const priceInput = row.querySelector('input[name^="variantPrice"]');
-                const discountPriceInput = row.querySelector('input[name^="variantDiscountPrice"]');
-                
-                if (nameInput.value && priceInput.value) {
-                    variants.push({
-                        name: nameInput.value,
-                        price: Number(priceInput.value),
-                        discountPrice: Number(discountPriceInput.value) || null
-                    });
-                }
-            });
-
-            if (variants.length === 0) {
-                showMessage('Please add at least one variant with a name and price.');
-                return;
-            }
-            
             const data = {
-                name: formData.get('name'), type: formData.get('type'),
-                variants: variants,
-                imageUrl: formData.get('imageUrl'),
+                name: formData.get('name'), type: formData.get('type'), price: Number(formData.get('price')),
+                discountPrice: Number(formData.get('discountPrice')) || null, imageUrl: formData.get('imageUrl'),
                 description: formData.get('description'), isFeatured: formData.get('isFeatured') === 'on',
-                keys: keys, createdAt: serverTimestamp()
+                keys: keys, 
+                updatedAt: serverTimestamp() // Use for updates
             };
-            if (currentProduct) { delete data.createdAt; await updateDoc(doc(db, 'products', currentProduct.id), data); } 
-            else { await addDoc(collection(db, 'products'), data); }
+            if (currentProduct) { 
+                await updateDoc(doc(db, 'products', currentProduct.id), data); 
+            } 
+            else { 
+                data.createdAt = serverTimestamp(); // Add createdAt for new docs
+                await addDoc(collection(db, 'products'), data); 
+            }
             closeModal(productModal);
         }
         
@@ -553,10 +514,16 @@
             const reviewModal = document.getElementById('review-modal');
             const data = {
                 name: e.target.name.value, stars: Number(e.target.stars.value),
-                text: e.target.text.value, createdAt: serverTimestamp()
+                text: e.target.text.value, 
+                updatedAt: serverTimestamp()
             };
-            if (currentReview) { delete data.createdAt; await updateDoc(doc(db, 'reviews', currentReview.id), data); } 
-            else { await addDoc(collection(db, 'reviews'), data); }
+            if (currentReview) { 
+                await updateDoc(doc(db, 'reviews', currentReview.id), data); 
+            } 
+            else { 
+                data.createdAt = serverTimestamp();
+                await addDoc(collection(db, 'reviews'), data); 
+            }
             closeModal(reviewModal);
         }
 
@@ -576,39 +543,46 @@
             const couponModal = document.getElementById('coupon-modal');
             const data = {
                 code: e.target.code.value.toUpperCase(), type: e.target.type.value,
-                value: Number(e.target.value.value), createdAt: serverTimestamp()
+                value: Number(e.target.value.value), 
+                updatedAt: serverTimestamp()
             };
-            if (currentCoupon) { delete data.createdAt; await updateDoc(doc(db, 'coupons', currentCoupon.id), data); } 
-            else { await addDoc(collection(db, 'coupons'), data); }
+            if (currentCoupon) { 
+                await updateDoc(doc(db, 'coupons', currentCoupon.id), data); 
+            } 
+            else { 
+                data.createdAt = serverTimestamp();
+                await addDoc(collection(db, 'coupons'), data); 
+            }
             closeModal(couponModal);
         }
 
-        function openQRCodeModal(qrcode = null) {
-            currentQRCode = qrcode;
-            const qrcodeModal = document.getElementById('qrcode-modal');
-            document.getElementById('qrcode-modal-title').textContent = qrcode ? 'Edit QR Code' : 'Add QR Code';
-            qrcodeModal.querySelector('.space-y-4').innerHTML = `
-                <div><label class="font-medium">Name</label><input name="name" value="${qrcode?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
-                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${qrcode?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
+        function openQrModal(qr = null) {
+            currentQr = qr;
+            const qrModal = document.getElementById('qr-modal');
+            document.getElementById('qr-modal-title').textContent = qr ? 'Edit QR Code' : 'Add QR Code';
+            qrModal.querySelector('.space-y-4').innerHTML = `
+                <div><label class="font-medium">Name (e.g. Paytm, Google Pay)</label><input name="name" value="${qr?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
+                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${qr?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
             `;
-            openModal(qrcodeModal);
+            openModal(qrModal);
         }
 
-        async function handleQRCodeFormSubmit(e) {
+        async function handleQrFormSubmit(e) {
             e.preventDefault();
-            const qrcodeModal = document.getElementById('qrcode-modal');
+            const qrModal = document.getElementById('qr-modal');
             const data = {
                 name: e.target.name.value,
                 imageUrl: e.target.imageUrl.value,
-                createdAt: serverTimestamp()
+                updatedAt: serverTimestamp()
             };
-            if (currentQRCode) {
-                delete data.createdAt;
-                await updateDoc(doc(db, 'paymentQRs', currentQRCode.id), data);
-            } else {
-                await addDoc(collection(db, 'paymentQRs'), data);
+            if (currentQr) { 
+                await updateDoc(doc(db, 'paymentQRs', currentQr.id), data); 
+            } 
+            else { 
+                data.createdAt = serverTimestamp();
+                await addDoc(collection(db, 'paymentQRs'), data); 
             }
-            closeModal(qrcodeModal);
+            closeModal(qrModal);
         }
 
         function openUserDetailModal(userId) {
@@ -616,27 +590,30 @@
             if (!user) return;
             document.getElementById('user-detail-content').innerHTML = `
                 <button type="button" class="close-modal-btn absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-800" data-modal-id="user-detail-modal">&times;</button>
-                <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
-                    <h3 class="text-2xl font-bold mb-4 break-all">${user.email}</h3>
-                    <a href="mailto:${user.email}" class="flex-shrink-0 bg-gray-200 text-gray-800 py-2 px-4 rounded-md text-sm hover:bg-gray-300"><i class="fas fa-envelope mr-2"></i>Send Email</a>
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold mb-4">${user.email}</h3>
+                    <a href="mailto:${user.email}" class="bg-gray-200 text-gray-800 py-2 px-4 rounded-md text-sm hover:bg-gray-300"><i class="fas fa-envelope mr-2"></i>Send Email</a>
                 </div>
                 <div class="mb-6"><p class="text-gray-600">Current Balance: <span class="font-bold text-xl">₹${(user.walletBalance || 0).toFixed(2)}</span></p></div>
                 <form id="wallet-adjustment-form" class="mb-6 p-4 border rounded-md">
                      <h4 class="font-semibold mb-2">Adjust Wallet</h4>
-                     <div class="flex flex-col sm:flex-row gap-2">
-                         <input type="number" step="0.01" id="adjustment-amount" placeholder="Amount (e.g., 50 or -50)" class="w-full border rounded-md p-2" required>
-                         <input type="text" id="adjustment-reason" placeholder="Reason (e.g., Refund)" class="w-full border rounded-md p-2" required>
-                         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md flex-shrink-0">Adjust</button>
+                     <div class="flex space-x-2">
+                         <input type="number" step="0.01" id="adjustment-amount" placeholder="Amount (e.g., 50 or -50)" class="flex-grow border rounded-md p-2" required>
+                         <input type="text" id="adjustment-reason" placeholder="Reason (e.g., Refund)" class="flex-grow border rounded-md p-2" required>
+                         <button type="submit" class="bg-green-500 text-white px-4 rounded-md">Adjust</button>
                      </div>
                 </form>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-6">
                     <div><h4 class="font-semibold mb-2">Order History</h4><div id="user-orders-history" class="max-h-40 overflow-y-auto">Loading...</div></div>
                     <div><h4 class="font-semibold mb-2">Wallet History</h4><div id="user-wallet-history" class="max-h-40 overflow-y-auto">Loading...</div></div>
                 </div>`;
             
             openModal(document.getElementById('user-detail-modal'));
-            loadUserHistory(userId, 'orders', 'user-orders-history');
-            loadUserHistory(userId, 'walletTransactions', 'user-wallet-history');
+            
+            // Use the subcollection path from your website code
+            loadUserHistory(userId, 'orders', 'user-orders-history', `users/${userId}/orders`);
+            loadUserHistory(userId, 'walletTransactions', 'user-wallet-history', `users/${userId}/walletTransactions`);
+
             document.getElementById('wallet-adjustment-form').addEventListener('submit', e => {
                 e.preventDefault();
                 const amount = parseFloat(document.getElementById('adjustment-amount').value);
@@ -646,101 +623,154 @@
         }
         
         function attachTableListeners(tableId, type, openFn, deleteFn, collectionName, dataMap) {
-            document.getElementById(tableId).addEventListener('click', async e => {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            table.addEventListener('click', async e => {
                 const id = e.target.dataset.id; if (!id) return;
-                if (e.target.classList.contains('edit-btn')) { const data = dataMap.get(id); if (data) openFn({ id, ...data }); }
-                if (e.target.classList.contains('delete-btn')) { 
-                    if (confirm(`Are you sure you want to delete this ${type}?`)) { 
-                        await deleteFn(doc(db, collectionName, id)); 
-                    }
-                }
+                if (e.target.classList.contains('edit-btn')) { const data = dataMap.get(id); if (data) openFn(data); }
+                if (e.target.classList.contains('delete-btn')) { if (confirm(`Are you sure you want to delete this ${type}?`)) { await deleteFn(doc(db, collectionName, id)); } }
                 if (e.target.classList.contains('featured-toggle')) { await updateDoc(doc(db, 'products', id), { isFeatured: e.target.checked }); }
             });
         }
-        function attachUserActions() { document.querySelectorAll('.view-user-btn').forEach(btn => btn.addEventListener('click', e => openUserDetailModal(e.target.dataset.id))); }
-        
+        function attachUserActions() { 
+            document.querySelectorAll('.view-user-btn').forEach(btn => {
+                // Remove old listeners to prevent duplicates
+                btn.replaceWith(btn.cloneNode(true));
+            });
+            document.getElementById('users-table').addEventListener('click', e => {
+                 if (e.target.classList.contains('view-user-btn')) {
+                    openUserDetailModal(e.target.dataset.id);
+                 }
+            });
+        }
+        function attachVerificationListeners(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            
+            // Remove old listeners
+            table.replaceWith(table.cloneNode(true));
+            document.getElementById(tableId).addEventListener('click', e => {
+                const id = e.target.dataset.id; if (!id) return;
+                if (e.target.classList.contains('approve-btn')) { approveVerification(id, e.target.dataset.userId, Number(e.target.dataset.amount)); }
+                if (e.target.classList.contains('reject-btn')) { rejectVerification(id); }
+            });
+        }
+
         async function approveVerification(verificationId, userId, amount) {
+            if (!userId || !amount) {
+                alert("Error: Missing user ID or amount. Cannot approve.");
+                return;
+            }
             const loaderOverlay = document.getElementById('loader-overlay');
-            openModal(loaderOverlay);
+            loaderOverlay.classList.remove('hidden');
             const verificationRef = doc(db, "paymentVerifications", verificationId);
             const userRef = doc(db, "users", userId);
+            const walletTxRef = doc(collection(db, 'users', userId, 'walletTransactions')); // Correct subcollection path
+
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(userRef);
-                    if (!userDoc.exists()) {
-                        throw "User document not found!";
-                    }
+                    if (!userDoc.exists()) throw "User document not found!";
                     const newBalance = (userDoc.data().walletBalance || 0) + amount;
+                    
                     transaction.update(userRef, { walletBalance: newBalance });
                     transaction.update(verificationRef, { status: "approved" });
-                    const walletTxRef = doc(collection(db, 'walletTransactions'));
-                    transaction.set(walletTxRef, { userId: userId, amount: amount, type: 'credit', description: 'Wallet top-up (Approved)', createdAt: serverTimestamp() });
+                    
+                    transaction.set(walletTxRef, { 
+                        userId: userId, 
+                        amount: amount, 
+                        type: 'credit', 
+                        description: 'Wallet top-up (Approved)', 
+                        createdAt: serverTimestamp() 
+                    });
                 });
-            } catch (error) {
-                if (error === "User document not found!") {
-                    showMessage("Approval Failed: The user for this payment request could not be found in the database. The user may have been deleted.");
-                } else {
-                    showMessage("An unknown error occurred during the transaction. Please check the console for details.");
-                    console.error("Transaction failed: ", error);
-                }
-            } finally {
-                closeModal(loaderOverlay);
-            }
+            } catch (error) { 
+                console.error("Transaction failed: ", error); 
+                alert("Transaction failed: " + error);
+            } 
+            finally { loaderOverlay.classList.add('hidden'); }
         }
 
-        async function rejectVerification(verificationId) { await updateDoc(doc(db, "paymentVerifications", verificationId), { status: 'rejected' }); }
+        async function rejectVerification(verificationId) { 
+            try {
+                await updateDoc(doc(db, "paymentVerifications", verificationId), { status: 'rejected' }); 
+            } catch (err) {
+                console.error("Rejection failed:", err);
+                alert("Rejection failed: " + err.message);
+            }
+        }
         
         async function adjustUserWallet(userId, amount, reason) {
             const loaderOverlay = document.getElementById('loader-overlay');
-            openModal(loaderOverlay);
+            loaderOverlay.classList.remove('hidden');
             const userRef = doc(db, "users", userId);
+            const walletTxRef = doc(collection(db, 'users', userId, 'walletTransactions')); // Correct subcollection path
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(userRef);
                     if (!userDoc.exists()) throw "User not found";
                     const newBalance = (userDoc.data().walletBalance || 0) + amount;
                     transaction.update(userRef, { walletBalance: newBalance });
-                    const walletTxRef = doc(collection(db, 'walletTransactions'));
-                    transaction.set(walletTxRef, { userId: userId, amount: Math.abs(amount), type: amount > 0 ? 'credit' : 'debit', description: `Admin: ${reason}`, createdAt: serverTimestamp() });
+                    transaction.set(walletTxRef, { 
+                        userId: userId, 
+                        amount: Math.abs(amount), 
+                        type: amount > 0 ? 'credit' : 'debit', 
+                        description: `Admin: ${reason}`, 
+                        createdAt: serverTimestamp() 
+                    });
                 });
                 closeModal(document.getElementById('user-detail-modal'));
             } catch (error) { 
-                showMessage(`Wallet adjustment failed: ${error}`);
                 console.error("Wallet adjustment failed:", error); 
+                alert("Wallet adjustment failed: " + error);
             } 
-            finally { closeModal(loaderOverlay); }
+            finally { loaderOverlay.classList.add('hidden'); }
         }
 
-        async function loadUserHistory(userId, collectionName, elementId) {
+        async function loadUserHistory(userId, collectionName, elementId, collectionPath) {
             const container = document.getElementById(elementId);
-            const q = query(collection(db, collectionName), where("userId", "==", userId), orderBy("createdAt", "desc"));
-            const snapshot = await getDocs(q);
-            if (snapshot.empty) { container.innerHTML = `<p class="text-gray-500">No history found.</p>`; return; }
-            if (collectionName === 'orders') {
-                container.innerHTML = snapshot.docs.map(doc => `<div class="text-sm p-2 border-b">${doc.data().createdAt.toDate().toLocaleDateString()}: ${doc.data().items.length} items - ₹${doc.data().total.toFixed(2)}</div>`).join('');
-            } else {
-                 container.innerHTML = snapshot.docs.map(doc => `<div class="text-sm p-2 border-b">${doc.data().createdAt.toDate().toLocaleDateString()}: ${doc.data().description} (${doc.data().type}) - ₹${doc.data().amount.toFixed(2)}</div>`).join('');
+            if (!container) return;
+            
+            // Use the full collectionPath provided, which includes the user ID
+            const q = query(collection(db, collectionPath), orderBy("createdAt", "desc"));
+            
+            try {
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) { container.innerHTML = `<p class="text-gray-500">No history found.</p>`; return; }
+                
+                if (collectionName === 'orders') {
+                    container.innerHTML = snapshot.docs.map(doc => `<div class="text-sm p-2 border-b">${doc.data().createdAt.toDate().toLocaleDateString()}: ${doc.data().items.length} items - ₹${doc.data().total.toFixed(2)}</div>`).join('');
+                } else if (collectionName === 'walletTransactions') {
+                     container.innerHTML = snapshot.docs.map(doc => `<div class="text-sm p-2 border-b">${doc.data().createdAt.toDate().toLocaleDateString()}: ${doc.data().description} (${doc.data().type}) - ₹${doc.data().amount.toFixed(2)}</div>`).join('');
+                }
+            } catch (err) {
+                console.error(`Error loading ${collectionName} for user ${userId}:`, err);
+                container.innerHTML = `<p class="text-red-500">Error loading history.</p>`;
             }
         }
         
         async function loadBannerContent() {
-            const bannerRef = doc(db, 'siteContent', 'homepage');
-            const docSnap = await getDoc(bannerRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const bannerForm = document.getElementById('banner-form');
-                bannerForm.heroTitle.value = data.heroTitle || '';
-                bannerForm.heroSubtitle.value = data.heroSubtitle || '';
-                bannerForm.heroImageUrl.value = data.heroImageUrl || '';
-                bannerForm.heroButtonText.value = data.heroButtonText || '';
-                bannerForm.heroButtonLink.value = data.heroButtonLink || '';
+            try {
+                const bannerRef = doc(db, 'siteContent', 'homepage');
+                const docSnap = await getDoc(bannerRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const bannerForm = document.getElementById('banner-form');
+                    bannerForm.heroTitle.value = data.heroTitle || '';
+                    bannerForm.heroSubtitle.value = data.heroSubtitle || '';
+                    bannerForm.heroImageUrl.value = data.heroImageUrl || '';
+                    bannerForm.heroButtonText.value = data.heroButtonText || '';
+                    bannerForm.heroButtonLink.value = data.heroButtonLink || '';
+                }
+            } catch (err) {
+                console.error("Error loading banner content:", err);
             }
         }
 
         async function handleBannerFormSubmit(e) {
             e.preventDefault();
             const loaderOverlay = document.getElementById('loader-overlay');
-            openModal(loaderOverlay);
+            loaderOverlay.classList.remove('hidden');
             const bannerForm = document.getElementById('banner-form');
             const data = {
                 heroTitle: bannerForm.heroTitle.value, heroSubtitle: bannerForm.heroSubtitle.value,
@@ -748,11 +778,8 @@
                 heroButtonLink: bannerForm.heroButtonLink.value,
             };
             try { await setDoc(doc(db, 'siteContent', 'homepage'), data, { merge: true }); } 
-            catch (error) { 
-                showMessage(`Error saving banner: ${error}`);
-                console.error("Error saving banner:", error); 
-            }
-            finally { closeModal(loaderOverlay); }
+            catch (error) { console.error("Error saving banner:", error); }
+            finally { loaderOverlay.classList.add('hidden'); }
         }
     </script>
 </body>
