@@ -76,8 +76,9 @@
                     <button id="mobile-menu-btn" class="text-gray-800 focus:outline-none p-1">
                         <i class="fas fa-bars fa-lg"></i>
                     </button>
-                    <h1 class="text-lg font-bold text-gray-800">Dashboard</h1>
-                    <div class="w-6"></div> </header>
+                    <h1 id="mobile-header-title" class="text-lg font-bold text-gray-800">Dashboard</h1>
+                    <div class="w-6"></div> <!-- Spacer -->
+                </header>
 
                 <main class="flex-1 p-4 md:p-10 overflow-y-auto">
                     <section id="dashboard-section" class="content-section active">
@@ -92,12 +93,12 @@
                     </section>
 
                     <section id="products-section" class="content-section">
-                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Products</h1><button id="add-product-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Product</button></div>
-                          <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price</th><th class="px-4 py-3 whitespace-nowrap">Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
+                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Products</h1><button id="add-product-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Product</button></div>
+                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price</th><th class="px-4 py-3 whitespace-nowrap">Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
                     </section>
 
                     <section id="orders-section" class="content-section">
-                        <h1 class="text-2xl md:text-3xl font-bold mb-6">Orders</h1>
+                        <h1 class="text-2xl md:text-3xl font-bold mb-6">All User Orders</h1>
                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Order ID</th><th class="px-4 py-3 whitespace-nowrap">User Email</th><th class="px-4 py-3">Phone</th><th class="px-4 py-3">Total</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Items</th></tr></thead><tbody id="orders-table"></tbody></table></div></div>
                     </section>
 
@@ -107,16 +108,16 @@
                     </section>
 
                     <section id="reviews-section" class="content-section">
-                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Review</button></div>
-                          <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3">Stars</th><th class="px-4 py-3 min-w-[200px]">Text</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="reviews-table"></tbody></table></div></div>
+                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Reviews</h1><button id="add-review-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Review</button></div>
+                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3">Stars</th><th class="px-4 py-3 min-w-[200px]">Text</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="reviews-table"></tbody></table></div></div>
                     </section>
 
                     <section id="users-section" class="content-section">
-                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                              <h1 class="text-2xl md:text-3xl font-bold">Users</h1>
-                              <input type="text" id="user-search" placeholder="Search email..." class="w-full sm:w-1/3 px-3 py-2 border rounded-md">
-                          </div>
-                          <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Email</th><th class="px-4 py-3 whitespace-nowrap">Wallet Bal.</th><th class="px-4 py-3 whitespace-nowrap">Joined On</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
+                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                             <h1 class="text-2xl md:text-3xl font-bold">Users</h1>
+                             <input type="text" id="user-search" placeholder="Search email..." class="w-full sm:w-1/3 px-3 py-2 border rounded-md">
+                         </div>
+                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Email</th><th class="px-4 py-3 whitespace-nowrap">Wallet Bal.</th><th class="px-4 py-3 whitespace-nowrap">Joined On</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
                     </section>
 
                     <section id="marketing-section" class="content-section">
@@ -141,14 +142,15 @@
                     </section>
 
                     <section id="paymentQRs-section" class="content-section">
-                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Payment QRs</h1><button id="add-qr-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add QR Code</button></div>
-                          <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3 min-w-[150px]">Image URL</th><th class="px-4 py-3">Preview</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="qrs-table"></tbody></table></div></div>
+                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Payment QRs</h1><button id="add-qr-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add QR Code</button></div>
+                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3 min-w-[150px]">Image URL</th><th class="px-4 py-3">Preview</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="qrs-table"></tbody></table></div></div>
                     </section>
                 </main>
             </div>
         </div>
     </div>
-     
+    
+    <!-- Modals -->
     <div id="product-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
@@ -185,7 +187,7 @@
         </div>
     </div>
     <div id="loader-overlay" class="loader-overlay hidden fixed z-[60] inset-0 bg-gray-900 bg-opacity-50 opacity-0 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-5xl text-white"></i></div>
-     
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -318,6 +320,8 @@
         function setupNavigation() {
             const links = document.querySelectorAll('.sidebar-link');
             const sections = document.querySelectorAll('.content-section');
+            const mobileHeaderTitle = document.getElementById('mobile-header-title');
+
             links.forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
@@ -326,33 +330,96 @@
                     link.classList.add('active');
                     sections.forEach(s => s.classList.remove('active'));
                     document.getElementById(targetId).classList.add('active');
+                    
+                    // Update mobile header title
+                    if(mobileHeaderTitle) {
+                        mobileHeaderTitle.textContent = link.textContent;
+                    }
                 });
             });
         }
         
         function loadAllData() {
+            // Load users first to populate userMap for other collections
             loadUsers().then(() => {
+                // These can now run in parallel
                 loadCollectionData('products', 'products-table', renderProductRow, productsMap, { openFn: openProductModal });
                 loadCollectionData('reviews', 'reviews-table', renderReviewRow, reviewsMap, { openFn: openReviewModal });
                 loadCollectionData('coupons', 'coupons-table', renderCouponRow, couponsMap, { openFn: openCouponModal });
                 loadCollectionData('paymentQRs', 'qrs-table', renderQrRow, paymentQRsMap, { openFn: openQrModal });
-                loadCollectionData('orders', 'orders-table', renderOrderRow, new Map());
                 loadCollectionData('paymentVerifications', 'verifications-table', renderVerificationRow, new Map(), { onSnapshotCallback: updateVerificationUI });
+                
+                // *** NEW: Call loadAllOrders ***
+                loadAllOrders(); 
                 
                 loadDashboardAnalytics();
                 loadBannerContent();
             }).catch(err => {
-                console.error("Failed to load initial user data.", err);
+                // This will catch the permission error from loadUsers() and stop the unhandled rejection
+                console.error("Failed to load initial user data. This is likely a security rule issue.", err);
                  setTimeout(() => {
-                    alert("CRITICAL ERROR: Failed to load user data. Check Firestore Security Rules.");
-                }, 500);
+                     alert("CRITICAL ERROR: Failed to load user data. Check Firestore Security Rules.");
+                 }, 500);
             });
+        }
+
+        // *** NEW: Function to load all orders from all user subcollections ***
+        async function loadAllOrders() {
+            if (allUsers.length === 0) {
+                console.log("Waiting for users to load before fetching orders...");
+                return; 
+            }
+
+            console.log(`Fetching orders for ${allUsers.length} users...`);
+            let allOrders = [];
+            const ordersTable = document.getElementById('orders-table');
+            if (!ordersTable) return;
+            ordersTable.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Loading all user orders...</td></tr>';
+
+            try {
+                // Create an array of promises, one for each user's order query
+                const orderPromises = allUsers.map(user => {
+                    const ordersQuery = query(collection(db, 'users', user.id, 'orders'));
+                    return getDocs(ordersQuery);
+                });
+
+                // Wait for all user-order queries to complete
+                const allUserOrderSnapshots = await Promise.all(orderPromises);
+
+                // Process the results
+                allUserOrderSnapshots.forEach(snapshot => {
+                    snapshot.docs.forEach(doc => {
+                        allOrders.push({ id: doc.id, ...doc.data() });
+                    });
+                });
+
+                console.log(`Found ${allOrders.length} total orders.`);
+
+                // Sort all collected orders by date, newest first
+                allOrders.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+
+                // Render the sorted orders
+                if (allOrders.length === 0) {
+                    ordersTable.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No orders found for any user.</td></tr>';
+                } else {
+                    ordersTable.innerHTML = allOrders.map(order => renderOrderRow(order.id, order)).join('');
+                }
+
+                // Update the dashboard count
+                const totalOrdersEl = document.getElementById('total-orders');
+                if (totalOrdersEl) totalOrdersEl.textContent = allOrders.length;
+
+            } catch (err) {
+                console.error("Error loading all orders:", err);
+                ordersTable.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">Error loading orders. Check console and security rules.</td></tr>`;
+            }
         }
 
         function loadCollectionData(collectionName, tableId, renderFn, dataMap, options = {}) {
             const { openFn, onSnapshotCallback } = options;
             const q = query(collection(db, collectionName));
 
+            // Add error handler to onSnapshot to catch permissions errors here
             onSnapshot(q, (snapshot) => {
                 dataMap.clear();
                 const table = document.getElementById(tableId);
@@ -372,8 +439,10 @@
                 if (openFn) {
                     attachTableListeners(tableId, collectionName.slice(0, -1), openFn, deleteDoc, collectionName, dataMap);
                 }
-            }, (error) => {
+            }, (error) => { // This is the error handler for onSnapshot
                 console.error(`Error loading collection ${collectionName}:`, error);
+                // Don't alert for every collection, the user one is enough
+                // This prevents the UNHANDLEDREJECTION
             });
         }
         
@@ -389,15 +458,16 @@
                     allUsers.forEach(user => userMap.set(user.id, user.email));
                     renderUsers(allUsers);
                     resolve();
-                }, (err) => {
+                }, (err) => { // This is the error handler
                     console.error("Error loading users:", err);
-                    reject(err);
+                    reject(err); // Reject the promise to trigger the .catch() in loadAllData()
                 });
             });
         }
 
         const loadDashboardAnalytics = () => {
-            const collectionsToCount = ['products', 'users', 'orders'];
+            // *** UPDATED: Removed 'orders' from here as loadAllOrders() now handles it ***
+            const collectionsToCount = ['products', 'users'];
             collectionsToCount.forEach(c => {
                 onSnapshot(collection(db, c), (s) => {
                     const el = document.getElementById(`total-${c}`);
@@ -446,6 +516,7 @@
         // --- Render Functions ---
         const renderProductRow = (id, data) => `<tr><td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">${data.name || 'N/A'}</td><td class="px-4 py-3">${data.type || 'N/A'}</td><td class="px-4 py-3">₹${data.price || 0}</td><td class="px-4 py-3">${data.keys?.length || 0}</td><td class="px-4 py-3"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" data-id="${id}" class="sr-only peer featured-toggle" ${data.isFeatured ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div></label></td><td class="px-4 py-3 whitespace-nowrap space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-900 font-medium">Edit</button><button data-id="${id}" class="delete-btn text-red-600 hover:text-red-900 font-medium">Delete</button></td></tr>`;
         
+        // This render function is now used by loadAllOrders
         const renderOrderRow = (id, data) => `<tr><td class="px-4 py-3 font-medium text-gray-900">${data.orderId || id.slice(0, 8)+'...'}</td><td class="px-4 py-3">${userMap.get(data.userId) || data.userId?.slice(0, 10) + '...' || 'N/A'}</td><td class="px-4 py-3 whitespace-nowrap">${data.phoneNumber || 'N/A'}</td><td class="px-4 py-3">₹${(data.total || 0).toFixed(2)}</td><td class="px-4 py-3 whitespace-nowrap">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-4 py-3">${data.items?.length || 0}</td></tr>`;
         
         const renderVerificationRow = (id, data) => `<tr><td class="px-4 py-3 font-medium text-gray-900">${data.userEmail || 'N/A'}</td><td class="px-4 py-3">₹${data.amount || 0}</td><td class="px-4 py-3 font-mono text-xs md:text-sm">${data.transactionId || 'N/A'}</td><td class="px-4 py-3"><span class="status-badge status-${data.status || 'pending'}">${data.status || 'pending'}</span></td><td class="px-4 py-3 whitespace-nowrap">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-4 py-3 whitespace-nowrap space-x-2">${data.status === 'pending' ? `<button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600 hover:text-green-900 font-medium">Approve</button><button data-id="${id}" class="reject-btn text-red-600 hover:text-red-900 font-medium">Reject</button>` : ''}</td></tr>`;
@@ -591,7 +662,7 @@
                          <input type="number" step="0.01" id="adjustment-amount" placeholder="Amount (+/-)" class="flex-grow border rounded-md p-2" required>
                          <input type="text" id="adjustment-reason" placeholder="Reason" class="flex-grow border rounded-md p-2" required>
                          <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Adjust</button>
-                     </div>
+                    </div>
                 </form>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div><h4 class="font-semibold mb-2">Order History</h4><div id="user-orders-history" class="max-h-40 overflow-y-auto border rounded-md p-2 bg-gray-50">Loading...</div></div>
