@@ -94,7 +94,7 @@
 
                     <section id="products-section" class="content-section">
                          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"><h1 class="text-2xl md:text-3xl font-bold">Products</h1><button id="add-product-btn" class="w-full sm:w-auto bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Product</button></div>
-                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price</th><th class="px-4 py-3 whitespace-nowrap">Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
+                         <div class="bg-white p-4 rounded-lg shadow-md"><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="text-xs uppercase bg-gray-50"><tr><th class="px-4 py-3 whitespace-nowrap">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Price From</th><th class="px-4 py-3 whitespace-nowrap">Total Stock</th><th class="px-4 py-3">Featured</th><th class="px-4 py-3">Actions</th></tr></thead><tbody id="products-table"></tbody></table></div></div>
                     </section>
 
                     <section id="orders-section" class="content-section">
@@ -154,7 +154,38 @@
     <div id="product-modal" class="modal hidden fixed z-50 inset-0 bg-gray-600 bg-opacity-50 opacity-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-                <form id="product-form" class="p-6"><h3 id="product-modal-title" class="text-xl font-semibold mb-4">Add Product</h3><div class="space-y-4"></div><div class="mt-6 flex justify-end space-x-3"><button type="button" id="cancel-product-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button></div></form>
+                <!-- Changed p-6 to 0 and added inner container for scrolling -->
+                <form id="product-form" class="flex flex-col max-h-[90vh]">
+                    <div class="p-6 border-b">
+                        <h3 id="product-modal-title" class="text-xl font-semibold">Add Product</h3>
+                    </div>
+                    <!-- Form content now scrolls -->
+                    <div class="p-6 space-y-4 overflow-y-auto">
+                        <!-- Product Details -->
+                        <div><label class="font-medium">Name</label><input name="name" class="mt-1 block w-full border rounded-md p-2" required></div>
+                        <div><label class="font-medium">Description</label><textarea name="description" class="mt-1 block w-full border rounded-md p-2 h-24"></textarea></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div><label class="font-medium">Type</label><select name="type" class="mt-1 block w-full border rounded-md p-2"><option>OTT</option><option>Software</option></select></div>
+                            <div><label class="font-medium">Image URL</label><input name="imageUrl" class="mt-1 block w-full border rounded-md p-2"></div>
+                        </div>
+                        <div class="flex items-center"><input type="checkbox" name="isFeatured" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"><label>Featured on Homepage?</label></div>
+                        
+                        <!-- Variants Section -->
+                        <div class="border-t pt-4 mt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-lg font-semibold">Variants (Plans & Keys)</h4>
+                                <button type="button" id="add-variant-btn" class="bg-indigo-500 text-white py-1 px-3 rounded-md text-sm hover:bg-indigo-600">Add Variant</button>
+                            </div>
+                            <div id="variants-container" class="space-y-4">
+                                <!-- Variant blocks will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 border-t flex justify-end space-x-3 bg-gray-50 rounded-b-lg">
+                        <button type="button" id="cancel-product-modal" class="bg-gray-200 py-2 px-4 rounded-md">Cancel</button>
+                        <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -310,6 +341,16 @@
             });
 
             document.getElementById('product-form').addEventListener('submit', handleProductFormSubmit);
+            // Add listener for dynamic variant buttons
+            document.getElementById('product-form').addEventListener('click', e => {
+                if (e.target.id === 'add-variant-btn') {
+                    document.getElementById('variants-container').insertAdjacentHTML('beforeend', createVariantBlockHTML());
+                }
+                if (e.target.classList.contains('remove-variant-btn')) {
+                    e.target.closest('.variant-block').remove();
+                }
+            });
+
             document.getElementById('review-form').addEventListener('submit', handleReviewFormSubmit);
             document.getElementById('coupon-form').addEventListener('submit', handleCouponFormSubmit);
             document.getElementById('qr-form').addEventListener('submit', handleQrFormSubmit);
@@ -329,11 +370,15 @@
                     links.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
                     sections.forEach(s => s.classList.remove('active'));
-                    document.getElementById(targetId).classList.add('active');
+                    
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
                     
                     // Update mobile header title
                     if(mobileHeaderTitle) {
-                        mobileHeaderTitle.textContent = link.textContent;
+                        mobileHeaderTitle.textContent = link.textContent.trim();
                     }
                 });
             });
@@ -349,24 +394,26 @@
                 loadCollectionData('paymentQRs', 'qrs-table', renderQrRow, paymentQRsMap, { openFn: openQrModal });
                 loadCollectionData('paymentVerifications', 'verifications-table', renderVerificationRow, new Map(), { onSnapshotCallback: updateVerificationUI });
                 
-                // *** NEW: Call loadAllOrders ***
                 loadAllOrders(); 
-                
                 loadDashboardAnalytics();
                 loadBannerContent();
             }).catch(err => {
-                // This will catch the permission error from loadUsers() and stop the unhandled rejection
                 console.error("Failed to load initial user data. This is likely a security rule issue.", err);
                  setTimeout(() => {
-                     alert("CRITICAL ERROR: Failed to load user data. Check Firestore Security Rules.");
+                     console.error("CRITICAL ERROR: Failed to load user data. Check Firestore Security Rules.");
                  }, 500);
             });
         }
 
-        // *** NEW: Function to load all orders from all user subcollections ***
         async function loadAllOrders() {
             if (allUsers.length === 0) {
-                console.log("Waiting for users to load before fetching orders...");
+                console.log("No users found. Skipping order load.");
+                const ordersTable = document.getElementById('orders-table');
+                if (ordersTable) {
+                    ordersTable.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No users found to check for orders.</td></tr>';
+                }
+                const totalOrdersEl = document.getElementById('total-orders');
+                if (totalOrdersEl) totalOrdersEl.textContent = 0;
                 return; 
             }
 
@@ -377,16 +424,13 @@
             ordersTable.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Loading all user orders...</td></tr>';
 
             try {
-                // Create an array of promises, one for each user's order query
                 const orderPromises = allUsers.map(user => {
                     const ordersQuery = query(collection(db, 'users', user.id, 'orders'));
                     return getDocs(ordersQuery);
                 });
 
-                // Wait for all user-order queries to complete
                 const allUserOrderSnapshots = await Promise.all(orderPromises);
 
-                // Process the results
                 allUserOrderSnapshots.forEach(snapshot => {
                     snapshot.docs.forEach(doc => {
                         allOrders.push({ id: doc.id, ...doc.data() });
@@ -395,17 +439,14 @@
 
                 console.log(`Found ${allOrders.length} total orders.`);
 
-                // Sort all collected orders by date, newest first
                 allOrders.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
 
-                // Render the sorted orders
                 if (allOrders.length === 0) {
                     ordersTable.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No orders found for any user.</td></tr>';
                 } else {
                     ordersTable.innerHTML = allOrders.map(order => renderOrderRow(order.id, order)).join('');
                 }
 
-                // Update the dashboard count
                 const totalOrdersEl = document.getElementById('total-orders');
                 if (totalOrdersEl) totalOrdersEl.textContent = allOrders.length;
 
@@ -419,7 +460,6 @@
             const { openFn, onSnapshotCallback } = options;
             const q = query(collection(db, collectionName));
 
-            // Add error handler to onSnapshot to catch permissions errors here
             onSnapshot(q, (snapshot) => {
                 dataMap.clear();
                 const table = document.getElementById(tableId);
@@ -439,10 +479,13 @@
                 if (openFn) {
                     attachTableListeners(tableId, collectionName.slice(0, -1), openFn, deleteDoc, collectionName, dataMap);
                 }
-            }, (error) => { // This is the error handler for onSnapshot
+            }, (error) => { 
                 console.error(`Error loading collection ${collectionName}:`, error);
-                // Don't alert for every collection, the user one is enough
-                // This prevents the UNHANDLEDREJECTION
+                const table = document.getElementById(tableId);
+                if (table) {
+                    const colspan = table.querySelector('thead th')?.length || 5;
+                    table.innerHTML = `<tr><td colspan="${colspan}" class="p-4 text-center text-red-500">Error loading data. Check console and security rules.</td></tr>`;
+                }
             });
         }
         
@@ -458,27 +501,34 @@
                     allUsers.forEach(user => userMap.set(user.id, user.email));
                     renderUsers(allUsers);
                     resolve();
-                }, (err) => { // This is the error handler
+                }, (err) => { 
                     console.error("Error loading users:", err);
-                    reject(err); // Reject the promise to trigger the .catch() in loadAllData()
+                    reject(err); 
                 });
             });
         }
 
         const loadDashboardAnalytics = () => {
-            // *** UPDATED: Removed 'orders' from here as loadAllOrders() now handles it ***
             const collectionsToCount = ['products', 'users'];
             collectionsToCount.forEach(c => {
                 onSnapshot(collection(db, c), (s) => {
                     const el = document.getElementById(`total-${c}`);
                     if (el) el.textContent = s.size;
-                }, (err) => console.error(`Analytics error (${c}):`, err));
+                }, (err) => {
+                    console.error(`Analytics error (${c}):`, err);
+                    const el = document.getElementById(`total-${c}`);
+                    if (el) el.textContent = 'N/A';
+                });
             });
 
             onSnapshot(query(collection(db, 'paymentVerifications'), where("status", "==", "pending")), (s) => {
                 const el = document.getElementById('pending-verifications');
                 if (el) el.textContent = s.size;
-            }, (err) => console.error("Analytics error (verifications):", err));
+            }, (err) => {
+                console.error("Analytics error (verifications):", err);
+                const el = document.getElementById('pending-verifications');
+                if (el) el.textContent = 'N/A';
+            });
         };
         
         function updateVerificationUI(docs) {
@@ -487,7 +537,11 @@
             
             const recentTable = document.getElementById('recent-verifications-table');
             if (recentTable) {
-                recentTable.innerHTML = pending.slice(0, 5).map(v => renderRecentVerificationRow(v.id, v)).join('');
+                if (pending.length > 0) {
+                    recentTable.innerHTML = pending.slice(0, 5).map(v => renderRecentVerificationRow(v.id, v)).join('');
+                } else {
+                    recentTable.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No pending verifications.</td></tr>';
+                }
             }
             
             attachVerificationListeners('verifications-table');
@@ -503,6 +557,10 @@
         function renderUsers(usersToRender) {
              const table = document.getElementById('users-table');
              if (!table) return;
+             if (usersToRender.length === 0) {
+                table.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No users found.</td></tr>';
+                return;
+             }
              table.innerHTML = usersToRender.map(user => renderUserRow(user.id, user)).join('');
              attachUserActions();
         }
@@ -514,9 +572,24 @@
         }
 
         // --- Render Functions ---
-        const renderProductRow = (id, data) => `<tr><td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">${data.name || 'N/A'}</td><td class="px-4 py-3">${data.type || 'N/A'}</td><td class="px-4 py-3">₹${data.price || 0}</td><td class="px-4 py-3">${data.keys?.length || 0}</td><td class="px-4 py-3"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" data-id="${id}" class="sr-only peer featured-toggle" ${data.isFeatured ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div></label></td><td class="px-4 py-3 whitespace-nowrap space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-900 font-medium">Edit</button><button data-id="${id}" class="delete-btn text-red-600 hover:text-red-900 font-medium">Delete</button></td></tr>`;
+        const renderProductRow = (id, data) => {
+            const price = (data.variants && data.variants.length > 0)
+                ? `From ₹${Math.min(...data.variants.map(v => v.price || 0))}`
+                : 'N/A';
+            const stock = data.variants 
+                ? data.variants.reduce((acc, v) => acc + (v.keys?.length || 0), 0)
+                : 0;
+
+            return `<tr>
+                <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">${data.name || 'N/A'}</td>
+                <td class="px-4 py-3">${data.type || 'N/A'}</td>
+                <td class="px-4 py-3">${price}</td>
+                <td class="px-4 py-3">${stock}</td>
+                <td class="px-4 py-3"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" data-id="${id}" class="sr-only peer featured-toggle" ${data.isFeatured ? 'checked' : ''}><div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div></label></td>
+                <td class="px-4 py-3 whitespace-nowrap space-x-2"><button data-id="${id}" class="edit-btn text-indigo-600 hover:text-indigo-900 font-medium">Edit</button><button data-id="${id}" class="delete-btn text-red-600 hover:text-red-900 font-medium">Delete</button></td>
+            </tr>`;
+        };
         
-        // This render function is now used by loadAllOrders
         const renderOrderRow = (id, data) => `<tr><td class="px-4 py-3 font-medium text-gray-900">${data.orderId || id.slice(0, 8)+'...'}</td><td class="px-4 py-3">${userMap.get(data.userId) || data.userId?.slice(0, 10) + '...' || 'N/A'}</td><td class="px-4 py-3 whitespace-nowrap">${data.phoneNumber || 'N/A'}</td><td class="px-4 py-3">₹${(data.total || 0).toFixed(2)}</td><td class="px-4 py-3 whitespace-nowrap">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-4 py-3">${data.items?.length || 0}</td></tr>`;
         
         const renderVerificationRow = (id, data) => `<tr><td class="px-4 py-3 font-medium text-gray-900">${data.userEmail || 'N/A'}</td><td class="px-4 py-3">₹${data.amount || 0}</td><td class="px-4 py-3 font-mono text-xs md:text-sm">${data.transactionId || 'N/A'}</td><td class="px-4 py-3"><span class="status-badge status-${data.status || 'pending'}">${data.status || 'pending'}</span></td><td class="px-4 py-3 whitespace-nowrap">${data.createdAt?.toDate().toLocaleDateString() || '...'}</td><td class="px-4 py-3 whitespace-nowrap space-x-2">${data.status === 'pending' ? `<button data-id="${id}" data-user-id="${data.userId}" data-amount="${data.amount}" class="approve-btn text-green-600 hover:text-green-900 font-medium">Approve</button><button data-id="${id}" class="reject-btn text-red-600 hover:text-red-900 font-medium">Reject</button>` : ''}</td></tr>`;
@@ -535,21 +608,60 @@
         function openModal(modal) { modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
         function closeModal(modal) { modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
         
+        // --- NEW: Helper function to create HTML for a single variant block ---
+        function createVariantBlockHTML(variant = {}) {
+            const name = variant.name || '';
+            const price = variant.price || '';
+            const discountPrice = variant.discountPrice || '';
+            const keys = variant.keys?.join('\n') || '';
+
+            return `
+            <div class="variant-block border rounded-lg p-4 bg-gray-50 space-y-3 relative">
+                <button type="button" class="remove-variant-btn absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold">&times;</button>
+                
+                <div>
+                    <label class="font-medium text-sm">Variant Name</label>
+                    <input name="variantName" value="${name}" class="mt-1 block w-full border rounded-md p-2 text-sm" placeholder="e.g., 1 Month Plan" required>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="font-medium text-sm">Price</label>
+                        <input type="number" step="0.01" name="variantPrice" value="${price}" class="mt-1 block w-full border rounded-md p-2 text-sm" placeholder="199" required>
+                    </div>
+                    <div>
+                        <label class="font-medium text-sm">Discount Price <span class="text-gray-400">(Opt.)</span></label>
+                        <input type="number" step="0.01" name="variantDiscountPrice" value="${discountPrice}" class="mt-1 block w-full border rounded-md p-2 text-sm" placeholder="99">
+                    </div>
+                </div>
+                <div>
+                    <label class="font-medium text-sm">Product Keys <span class="text-gray-400">(One per line)</span></label>
+                    <textarea name="variantKeys" class="mt-1 block w-full border rounded-md p-2 h-24 text-sm font-mono" placeholder="KEY1...">${keys}</textarea>
+                </div>
+            </div>`;
+        }
+        
         function openProductModal(product = null) {
             currentProduct = product;
             const productModal = document.getElementById('product-modal');
+            const form = productModal.querySelector('form');
             document.getElementById('product-modal-title').textContent = product ? 'Edit Product' : 'Add Product';
-            productModal.querySelector('.space-y-4').innerHTML = `
-                <div><label class="font-medium">Name</label><input name="name" value="${product?.name || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
-                <div><label class="font-medium">Description</label><textarea name="description" class="mt-1 block w-full border rounded-md p-2 h-24">${product?.description || ''}</textarea></div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div><label class="font-medium">Type</label><select name="type" class="mt-1 block w-full border rounded-md p-2"><option ${product?.type === 'OTT' ? 'selected' : ''}>OTT</option><option ${product?.type === 'Software' ? 'selected' : ''}>Software</option></select></div>
-                    <div><label class="font-medium">Price</label><input type="number" step="0.01" name="price" value="${product?.price || ''}" class="mt-1 block w-full border rounded-md p-2" required></div>
-                </div>
-                <div><label class="font-medium">Discount Price (optional)</label><input type="number" step="0.01" name="discountPrice" value="${product?.discountPrice || ''}" class="mt-1 block w-full border rounded-md p-2"></div>
-                <div><label class="font-medium">Image URL</label><input name="imageUrl" value="${product?.imageUrl || ''}" class="mt-1 block w-full border rounded-md p-2"></div>
-                <div><label class="font-medium">Product Keys (one per line)</label><textarea name="keys" class="mt-1 block w-full border rounded-md p-2 h-32">${product?.keys?.join('\\n') || ''}</textarea></div>
-                <div class="flex items-center"><input type="checkbox" name="isFeatured" ${product?.isFeatured ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"><label>Featured on Homepage?</label></div>`;
+            
+            // Reset main form fields
+            form.name.value = product?.name || '';
+            form.description.value = product?.description || '';
+            form.type.value = product?.type || 'OTT';
+            form.imageUrl.value = product?.imageUrl || '';
+            form.isFeatured.checked = product?.isFeatured || false;
+
+            // Build and fill variants
+            const variantsContainer = document.getElementById('variants-container');
+            if (product?.variants && product.variants.length > 0) {
+                variantsContainer.innerHTML = product.variants.map(createVariantBlockHTML).join('');
+            } else {
+                // Add one empty block for new products
+                variantsContainer.innerHTML = createVariantBlockHTML();
+            }
+
             openModal(productModal);
         }
         
@@ -557,14 +669,43 @@
             e.preventDefault();
             const productModal = document.getElementById('product-modal');
             const formData = new FormData(e.target);
-            const keys = formData.get('keys').split('\n').map(k => k.trim()).filter(k => k);
+
+            // --- NEW: Read variants from the dynamic blocks ---
+            const variants = [];
+            const variantBlocks = document.querySelectorAll('.variant-block');
+            
+            for (const block of variantBlocks) {
+                const name = block.querySelector('[name="variantName"]').value;
+                const price = Number(block.querySelector('[name="variantPrice"]').value);
+                const discountPrice = Number(block.querySelector('[name="variantDiscountPrice"]').value) || null;
+                const keys = block.querySelector('[name="variantKeys"]').value
+                    .split('\n')
+                    .map(k => k.trim())
+                    .filter(k => k);
+                
+                if (name && price > 0) {
+                    variants.push({ name, price, discountPrice, keys });
+                }
+            }
+
+            if (variants.length === 0) {
+                alert("You must add at least one valid variant with a name and price.");
+                return;
+            }
+            // --- End of new variant logic ---
+
             const data = {
-                name: formData.get('name'), type: formData.get('type'), price: Number(formData.get('price')),
-                discountPrice: Number(formData.get('discountPrice')) || null, imageUrl: formData.get('imageUrl'),
-                description: formData.get('description'), isFeatured: formData.get('isFeatured') === 'on',
-                keys: keys, 
+                name: formData.get('name'),
+                type: formData.get('type'),
+                imageUrl: formData.get('imageUrl'),
+                description: formData.get('description'),
+                isFeatured: formData.get('isFeatured') === 'on',
+                variants: variants, // <-- NEW: Use the variants array
                 updatedAt: serverTimestamp()
             };
+            
+            // Note: We no longer save top-level price, discountPrice, or keys
+            
             if (currentProduct) { 
                 await updateDoc(doc(db, 'products', currentProduct.id), data); 
             } 
@@ -734,7 +875,11 @@
         }
 
         async function approveVerification(verificationId, userId, amount) {
-            if (!userId || !amount) { alert("Error: Missing user ID or amount."); return; }
+            if (!userId || !amount) { 
+                console.error("Missing userId or amount", verificationId, userId, amount);
+                alert("Error: Missing user ID or amount."); 
+                return; 
+            }
             const loaderOverlay = document.getElementById('loader-overlay');
             loaderOverlay.classList.remove('hidden', 'opacity-0');
             const verificationRef = doc(db, "paymentVerifications", verificationId);
